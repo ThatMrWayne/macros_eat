@@ -42,11 +42,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -119,13 +122,16 @@ USE_I18N = True
 
 USE_TZ = True
 
-CORS_ALLOW_HEADERS = json.loads(CONFIG["general"]["CORS_ALLOW_HEADERS"])
+CORS_ALLOWED_ORIGINS = json.loads(CONFIG["general"]["CORS_ALLOWED_ORIGINS"])
 CSRF_TRUSTED_ORIGINS = json.loads(CONFIG["general"]["CSRF_TRUSTED_ORIGINS"])
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles/")
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static/")]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

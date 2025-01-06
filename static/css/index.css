@@ -1,0 +1,28 @@
+/*section2的部分*/
+.section-2{
+    display:flex;
+    justify-content: flex-end;
+    align-items: center;  
+    background-color: lightgray;
+    background-image: url('https://d2fbjpv4bzz3d2.cloudfront.net/back.jpg');
+    background-size: cover;
+    height: 90vh;
+    flex-wrap: wrap;
+}
+
+
+@media(max-height:510px){
+    .section-2{
+        height: 460px;
+    }
+}
+
+
+
+
+
+
+
+
+
+
