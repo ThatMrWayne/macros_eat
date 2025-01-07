@@ -3,5 +3,6 @@ from authen.views import *
 
 
 urlpatterns = [
-    path('hello/', hello_world),
+    #path('hello/', hello_world),
+    path('signup/', signup),
 ]

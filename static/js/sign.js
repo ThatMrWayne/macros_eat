@@ -300,7 +300,7 @@ function switchBox(flag){
 //處理送出註冊資訊
 async function sendAuthSignUp(data){
     try{
-        let response = await fetch('/api/users/signup',{
+        let response = await fetch('/authen/signup/',{
                                      method: 'post',
                                      body: data,
                                      headers: { 'Content-Type': 'application/json'}
