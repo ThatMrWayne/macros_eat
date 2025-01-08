@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'authen'
 ]
 
 MIDDLEWARE = [
@@ -83,12 +84,14 @@ WSGI_APPLICATION = 'macroseat.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME': os.path.join(BASE_DIR, "db.sqlite3")
+    "default": {
+        "ENGINE": CONFIG["databases"]["ENGINE"],
+        "NAME": CONFIG["databases"]["NAME"],
+        "USER": CONFIG["databases"]["USER"],
+        "PASSWORD": CONFIG["databases"]["PASSWORD"],
+        "HOST": CONFIG["databases"]["HOST"],
+        "PORT": CONFIG["databases"]["PORT"],
     }
 }
 
@@ -147,7 +150,4 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
 }

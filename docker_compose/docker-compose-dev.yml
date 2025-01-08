@@ -1,0 +1,41 @@
+# developement version used on local
+
+services:
+  pg:
+    image: postgres:16
+    container_name: pg
+    volumes:
+      - ../docker/db-init-scripts:/docker-entrypoint-initdb.d:cached
+      - ../docker/scripts/create_db.sql:/create_db.sql
+      - ../db_data:/var/lib/postgresql/data:cached
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      - service-network
+
+  django-server:
+    image: macroseat-app
+    build:
+      context: .. # relative position to docker-compose.yml file location
+      dockerfile: ./docker/django/Dockerfile.dev
+    container_name: django-server
+    command: sh /app/docker/scripts/run_django_dev.sh
+    working_dir: /app
+    ports:
+      - 0.0.0.0:8000:8000
+    volumes:
+      # the first location is also relatvie to docker-compose file
+      - ..:/app:delegated # this is for reload code inside container while changing code in local
+    networks:
+      - service-network
+      #- omnisegment_default
+    links:
+      - pg
+    depends_on:
+      - pg
+
+
+networks:
+  service-network:
+    name: "service-network"
+    driver: bridge

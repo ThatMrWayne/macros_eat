@@ -376,18 +376,11 @@ function handleSignUp(){
         //if(emailRegex.test(email)&&passwordRegex.test(password)){
         if(emailRegex.test(email)){
             if(Number(identity)===1){
-                let signup_date = new Date();
-                let year = signup_date.getFullYear();
-                let month = signup_date.getMonth();
-                let date = signup_date.getDate();
-                let new_date = new Date(year,month,date);
-                let now_utc =  Date.UTC(new_date.getUTCFullYear(), new_date.getUTCMonth(), new_date.getUTCDate(),new_date.getUTCHours(), new_date.getUTCMinutes(), new_date.getUTCSeconds());
                 let data = {  //註冊資訊
                     "name":name,
                     "email":email,
                     "password":password,
-                    "signup_date":now_utc,
-                    "identity":1
+                    "identity":"general_user"
                 }
                 let req = JSON.stringify(data); //將註冊資料轉成json格式
                 sendAuthSignUp(req);
@@ -396,7 +389,7 @@ function handleSignUp(){
                     "name":name,
                     "email":email,
                     "password":password,
-                    "identity":2
+                    "identity":"nutritionist"
                 }
                 let req = JSON.stringify(data); //將註冊資料轉成json格式
                 sendAuthSignUp(req);
