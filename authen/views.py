@@ -21,7 +21,6 @@ def signup(request):
     name = signup_data.get('name', None)
     password = signup_data.get('password', None)
     identity = signup_data.get('identity', None)
-    print(signup_data)
     local_dt = datetime.now()
     utc_dt = local_dt.astimezone(timezone.utc)
     if not all([email, name, password, identity]):
