@@ -328,16 +328,16 @@ async function sendAuthSignUp(data){
 //處理送出登入資訊
 async function sendAuthSignIn(data){
     try{
-        let response = await fetch('/api/users/signin',{
+        let response = await fetch('/authen/signin/',{
                                      method: 'post',
                                      body: data,
                                      headers: { 'Content-Type': 'application/json'}
                                         });
         let result = await response.json();
         if(response.ok){  //200情況下
-                let test = [];
-                response.headers.forEach(function(o){test.push(o)});
-                localStorage.setItem('JWT',test[0]);
+                //let test = [];
+                //response.headers.forEach(function(o){test.push(o)});
+                //localStorage.setItem('JWT',test[0]);
                 if(result["initial"] === true){ //表示是第一次登入,動態render填寫資料頁面
                     render_fillin();
                 }else{ //表示不是第一次登入

@@ -4,4 +4,5 @@ from authen.views import *
 
 urlpatterns = [
     path('signup/', signup),
+    path('signin/', signin),
 ]
