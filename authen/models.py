@@ -22,3 +22,5 @@ class UserProfile(models.Model):
     habit = models.IntegerField(blank=True, null=True)
     target = models.IntegerField(blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    height = models.FloatField(blank=True, null=True)
+    weight = models.FloatField(blank=True, null=True)
