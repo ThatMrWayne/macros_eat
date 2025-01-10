@@ -5,11 +5,13 @@ from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
+from rest_framework.permissions import IsAuthenticated
 from authen.models import UserProfile
 from authen.decorators import *
 from datetime import datetime, timezone
 from utils.exceptions import *
+from authen.serializers import UserProfileSerializer
 
 User = get_user_model()
 
@@ -52,3 +54,66 @@ def signin(request):
     user_profile = user.userprofile
     auth.login(request, user)
     return Response({'initial': user_profile.first_login}, status=status.HTTP_200_OK)
+
+
+
+class UserViewSet(viewsets.GenericViewSet):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def retrieve(self, request, pk=None):
+        instance = request.user.userprofile
+        serializer = self.get_serializer(instance)
+        payload = Response({"data": serializer.data}, status=status.HTTP_200_OK)
+        return payload
+
+    def partial_update(self, request, *args, **kwargs):
+        update_data = request.data
+        user = request.user
+        user_profile = user.userprofile
+        labels = ["gender","height","weight","habit","target","age",]
+        habit_map = {
+            1: "sedentary",
+            2: "light_activity",
+            3: "moderate_activity",
+            4: "very_active"
+        }
+        target_map = {
+            1: "lose_weight",
+            2: "maintain",
+            3: "gain_weight"
+        }
+        gender_map = {
+            1: "male",
+            2: "female"
+        }
+        final_data = {}
+        for label in labels:
+            if label == "habit":
+                data = habit_map[update_data.get(label)]
+            elif label == "target":
+                data = target_map[update_data.get(label)]
+            elif label == "gender":
+                data = gender_map[update_data.get(label)]
+            else:
+                data = update_data.get(label)
+            final_data[label] = data
+        UserProfile.objects.filter(pk=user_profile.id).\
+            update(first_login=False, **final_data)
+        #calculate recommended plan and insert in db
+
+
+        # historical reason: set `remind` in cookie for frontend to decide
+        # whether show complete record page
+        response = Response({'ok': True}, status=status.HTTP_200_OK)
+        response.set_cookie(
+            key="remind", # represent this user has execute filling out the first time form
+            value="yes",
+            secure=False, #for dev
+            httponly=True,
+        )
+        return response
+
+
+

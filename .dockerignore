@@ -99,3 +99,6 @@ docker/db-init-scripts/
 
 # github
 README.md
+
+#debug
+debug*

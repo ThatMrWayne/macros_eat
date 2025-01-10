@@ -14,13 +14,27 @@ class IdentityType(models.TextChoices):
     NUTRITIONIST = "nutritionist"
 
 
+class ActivityLevelType(models.TextChoices):
+    SEDENTARY = "sedentary"
+    LIGHT_ACTIVITY = "light_activity"
+    MODERATE_ACTIVITY = "moderate_activity"
+    VERY_ACTIVE = "very_active"
+
+
+class TargetType(models.TextChoices):
+    LOSE_WEIGHT = "lose_weight"
+    MAINTAIN = "maintain"
+    GAIN_WEIGHT = "gain_weight"
+
+
 # Create your models here.
 class UserProfile(models.Model):
     identity = models.TextField(choices=[(v, v.value) for v in IdentityType])
-    sex = models.CharField(max_length=8, choices=[(v, v.value) for v in GenderType])
+    gender = models.CharField(max_length=8, choices=[(v, v.value) for v in GenderType])
     first_login = models.BooleanField(default=True)
-    habit = models.IntegerField(blank=True, null=True)
-    target = models.IntegerField(blank=True, null=True)
+    habit = models.TextField(choices=[(v, v.value) for v in ActivityLevelType])
+    target = models.TextField(choices=[(v, v.value) for v in TargetType])
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     height = models.FloatField(blank=True, null=True)
     weight = models.FloatField(blank=True, null=True)
+    age = models.IntegerField(null=True)

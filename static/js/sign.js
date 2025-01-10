@@ -19,10 +19,21 @@ let sign = {
 
 
 //動態顯示填資料表格
-function render_fillin(){
-    //先移掉登入註冊匡
-    let section2 = document.querySelector(".section-2");
-    document.body.removeChild(section2);
+function render_fillin(on_record_page=false){
+    console.log('呵呵呵')
+    if(on_record_page===true){
+        console.log('gggg');
+        let navmenu = document.querySelector(".navmenu");
+        console.log('ggggkk');
+        let maincontainer = document.querySelector(".main-container");
+        document.body.removeChild(navmenu);
+        document.body.removeChild(maincontainer);
+    }else{
+        //移掉登入註冊匡
+        let section2 = document.querySelector(".section-2");
+        document.body.removeChild(section2);
+    }
+
     let basic_information = document.createElement("div");
     basic_information.classList.add("basic-information");
     let welcome = document.createElement("div");
@@ -222,17 +233,42 @@ function render_fillin(){
         //先檢查表單資料都對不對&有沒有填
         let validate = validate_form();
         if(validate){
-            let jwt = localStorage.getItem("JWT");
             let json_data = organize_form();
-            submit_information(json_data,jwt);
-        }        
+            submit_information(json_data);
+        }
     });
     form.appendChild(submit);
     form_box.appendChild(form);
     basic_information.appendChild(form_box);
-    //最後把basci-inofrmation放在section1後面
-    let section1 = document.querySelector(".section-1");
-    section1.after(basic_information);
+    //最後把basic-inofrmation放在section1後面
+    if(on_record_page===false){
+        let section1 = document.querySelector(".section-1");
+        section1.after(basic_information);
+    }else{
+        // Create the main section element
+        const section = document.createElement('div');
+        section.className = 'section-1';
+        // Create the nav element
+        const nav = document.createElement('div');
+        nav.className = 'nav';
+        // Create the header element
+        const header = document.createElement('div');
+        header.className = 'header-1';
+        // Create the span element with text
+        const span = document.createElement('span');
+        span.textContent = 'Macros Eat';
+        // Create the image element
+        const img = document.createElement('img');
+        img.className = 'logo';
+        img.src = 'data:image/png;base64,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';
+        header.appendChild(span);
+        header.appendChild(img);
+        nav.appendChild(header);
+        section.appendChild(nav);
+        document.body.appendChild(section);
+        let section1 = document.querySelector(".section-1");
+        section1.after(basic_information);
+    }
 }
 
 
@@ -335,15 +371,12 @@ async function sendAuthSignIn(data){
                                         });
         let result = await response.json();
         if(response.ok){  //200情況下
-                //let test = [];
-                //response.headers.forEach(function(o){test.push(o)});
-                //localStorage.setItem('JWT',test[0]);
-                if(result["initial"] === true){ //表示是第一次登入,動態render填寫資料頁面
+                if(result["initial"] === true){ //表示還沒填寫資料頁面,動態 render填寫資料頁面
                     render_fillin();
-                }else{ //表示不是第一次登入
-                    window.location.href="/record"
+                }else{ //表示有填寫過資料
+                    window.location.href="/record/"
                 }
-        }else if(response.status === 400){ //代表1.密碼錯誤2.沒有此信箱會員
+        }else if(response.status === 400){ //代表1.密碼錯誤 2.沒有此信箱會員
                 showMessage(result.message,true,null)
                 let mail_input = document.querySelector('.email');
                 let pass_input = document.querySelector('.pass');
@@ -356,7 +389,6 @@ async function sendAuthSignIn(data){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
     }
-
 }
 
 
@@ -432,7 +464,6 @@ function handleSignIn(){
         let req = JSON.stringify(data); //轉成json格式
         sendAuthSignIn(req);
     }
-
 }
 
 //處理登出事件
@@ -569,42 +600,37 @@ function showBox(obj,flag){ //flag true代表有帳戶,false沒有帳戶
 }
 
 
-
-async function sendJWT(jwt){
+async function renderRecordCheck(){
+    // 拿使用者資料，判斷是否有填過初始資料
+    // 如果沒填過就要動態render初始資料表格
+    // 有填過就可以 render紀錄頁面
     try{
-        let response = await fetch('/api/users',{
-                                     method: 'get',
-                                     headers: {"Authorization" : `Bearer ${jwt}`}
-                                    });
+        let response = await fetch('/authen/user/',{method: 'get'});
         let result = await response.json();
-        if(response.ok && result.data["identity"]===1 && result.data["initial"]===0){
-                // 進到首頁時,如果已登入過就轉到紀錄畫面
-                if(window.location.pathname==='/'){
-                    window.location.href='/record';
-                }else if(window.location.pathname==='/record'){
-                    render_record(result.data);
-                    handle_notification();
-                }else if(window.location.pathname==='/helper'){
-                    connect_socket(1);
-                }
-        }else if(response.ok && result.data["identity"]===1 && result.data["initial"]===1){ //代表登入後跳掉沒有填表單
-            if(window.location.pathname==='/'){
-                render_fillin() //顯示表單;
-            }else{
-                window.location.replace('/') //導回首頁
-            };
-        }else if(response.ok && result.data["identity"]===2){ //代表是營養師,直接導到諮詢頁面
-            if(window.location.pathname==='/helper'){
-                connect_socket(2);
-                handle_notification();
-            }else{
-                window.location.href="/helper";
-            }
-        }else{
-            console.log('jwt已失效');
-            localStorage.removeItem("JWT");
-            window.location.replace('/') //導回首頁
-        };
+        if(response.ok && result.data["identity"]===1 && result.data["initial"]===false){
+                // 有填過資料了可以顯示record頁面
+                render_record(result.data);
+                //}else if(window.location.pathname==='/helper'){
+                //   connect_socket(1);
+                //}
+        }else if(response.ok && result.data["identity"]===1 && result.data["initial"]===true){ //代表登入後跳掉沒有填表單
+            // 表示還沒填過
+            render_fillin(on_record_page=true) //顯示表單;
+        }else if (response.status === 403){
+            console.log('cookie已失效,請重新登入');
+            window.location.href = '/';
+        }
+        // 以下先不用管
+        //}else if(response.ok && result.data["identity"]===2){ //代表是營養師,直接導到諮詢頁面
+        //    if(window.location.pathname==='/helper'){
+        //        connect_socket(2);
+        //        handle_notification();
+        //    }else{
+        //        window.location.href="/helper";
+        //    }
+        //}else{
+        //    window.location.replace('/') //導回首頁
+        //};
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
@@ -613,10 +639,7 @@ async function sendJWT(jwt){
 
 
 function init_sign(){
-    let jwt = localStorage.getItem("JWT");
-    if(jwt){ //如果已經有jwt,加在header上送出request
-        sendJWT(jwt);
-    }else if (window.location.pathname ==='/'){
+    if (window.location.pathname ==='/'){
         let goto_signup = document.querySelector(".tosignup");
         goto_signup.addEventListener("click", ()=>{
             switchBox(false)
@@ -627,12 +650,12 @@ function init_sign(){
         let identity = document.getElementsByName("identity")[0];
         identity.value = "1";
         let email = document.querySelector(".email");
-        email.value = "test@gmail.com";
+        email.value = "wayne@gmail.com";
         let pwd = document.querySelector(".pass");
-        pwd.value = "wayne123WAYNE";
-    }else{
-        // 只是導回到root path(上一步 else if)
-        window.location.replace('/');
+        pwd.value = "123";
+    }else if (window.location.pathname ==='/record/'){
+        // 準備 render 記錄頁面，要先檢查有沒有填過初始資料
+        renderRecordCheck();
     }
 }
 

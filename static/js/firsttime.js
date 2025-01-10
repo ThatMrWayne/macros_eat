@@ -1,27 +1,38 @@
+//get csrf token
+function getCsrfToken() {
+    const name = 'csrftoken';
+    let cookieValue = null;
+
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
 //send updated data
-async function submit_information(payload,jwt){
+async function submit_information(payload){
     try{
-        let response = await fetch('/api/users',{
-                                     method: 'put',
+        let response = await fetch('/authen/user/',{
+                                     method: 'PATCH',
                                      body : payload,
-                                     headers: {"Authorization" : `Bearer ${jwt}`,'Content-Type': 'application/json'}
+                                     headers: {
+                                        'X-CSRFToken': getCsrfToken(),
+                                        'Content-Type': 'application/json'}
                                     });
         let result = await response.json();
         if(response.ok){
-            //check if new JWT in header(switch old one if existed)
-            let test = [];
-            for(let key of response.headers.keys()) {
-                if(key === "access_token"){
-                    response.headers.forEach(function(o){test.push(o)});
-                    localStorage.removeItem('JWT');
-                    localStorage.setItem('JWT',test[0]);
-                }
-            }
             //get new cookie at this moment (remind=yes)
             window.location.replace('/record')
         }else if (response.status === 403){
-            console.log('JWT已失效,請重新登入');
-            localStorage.removeItem("JWT");
+            console.log('cookie已失效,請重新登入');
             window.location.href = '/';
         }else if (response.status === 400){
             console.log(result);

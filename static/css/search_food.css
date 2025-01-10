@@ -1,0 +1,67 @@
+.search-result{
+    position: absolute;
+    top: 46px;
+    left: 25px;
+    background: white;
+    z-index:2;
+    border-radius: 6px
+}
+.u{
+    list-style-type: none;
+    border: 1px solid lightgray;
+    box-sizing: border-box;
+    width: 230px;
+    margin: 0px;
+    padding: 0px;
+    height:250px;
+    overflow:auto;
+    border-radius: 6px
+}
+
+.no-found{
+    text-align: center;
+    padding-top: 100px;
+    color: dimgray;
+}
+
+
+.u > li{
+    padding-top: 3px;
+    padding-left: 5px;
+    padding-bottom: 3px;
+}
+
+li.food-item-li:hover{
+    color : #F0754F ;
+    cursor: pointer;
+    opacity: 1;
+}
+
+
+.info-box{
+    width: 120px;
+    position: absolute;
+    right: 230px;
+    top: 0px;
+    background: lightslategray;
+    color: ghostwhite;
+    border-radius: 5px;
+}
+
+.info-box > ul{
+    list-style-type: none;
+    font-size: 14px;
+    padding: 0px;
+    display: block;
+    padding-left: 20px;
+}
+
+.info{
+    width: 16px;
+    display: inline-block;
+}
+
+.info-number{
+    width: 50px;
+    display: inline-block;
+}
