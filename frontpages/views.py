@@ -35,4 +35,6 @@ class RecordPageView(TemplateView):
         if request.user is None or not request.user.is_authenticated:
             return redirect(self.redirect_to)
 
-        return super().dispatch(request, *args, **kwargs)
+        response = super().dispatch(request, *args, **kwargs)
+        response.delete_cookie('remind')
+        return response

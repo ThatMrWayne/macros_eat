@@ -1647,7 +1647,7 @@ function render_sidebar(user_data){
     render_health_helper(navmenu);
     render_log_out(navmenu);
     let remind = document.getElementById("remind").textContent;
-    if(remind === "yes"){ 
+    if(remind === "yes"){
         let my_plan = document.querySelector(".personal-plan");
         let remind_div = document.createElement('div');
         remind_div.classList.add("remind");

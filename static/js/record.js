@@ -1,8 +1,8 @@
 let record_id;
-let on_which_date;  //what date currently on 
-let on_date_utc;    //what date currently on in timestamp 
+let on_which_date;  //what date currently on
+let on_date_utc;    //what date currently on in timestamp
 let on_date_format; //what date currently on in display format
-let new_target_calories; //nutrition after edited 
+let new_target_calories; //nutrition after edited
 let new_target_protein;
 let new_target_fat;
 let new_target_carbs;
@@ -1729,16 +1729,14 @@ function show_empty(){
 };
 
 
-
-// /api/records 
-async function get_record(timestamp,show_date_format){
-    let jwt = localStorage.getItem("JWT");
+// /api/records
+async function get_record(timestamp, show_date_format){
     try{
         let response = await fetch('/api/records?datetime='+String(timestamp),{
                                                     method: 'get',
-                                                    headers: {"Authorization" : `Bearer ${jwt}`}
+                                                    headers: {'X-CSRFToken': getCsrfToken()}
                                                 });
-        let result = await response.json();                                
+        let result = await response.json();
         if(response.ok){  
             //1.remove loading animation
             let main_container = document.querySelector(".main-container");
@@ -1779,9 +1777,9 @@ async function get_record(timestamp,show_date_format){
 function render_record(user_data){
     //to server query timestamp
     let current_date = new Date();
-    let year = current_date.getFullYear(); 
-    let month = current_date.getMonth() 
-    let date = current_date.getDate();  
+    let year = current_date.getFullYear();
+    let month = current_date.getMonth()
+    let date = current_date.getDate();
     let show_date_format = Month[month+1] + " "+String(date) + ", " + String(year); 
     let new_date = new Date(year,month,date);
     let now_utc = new_date.getTime();
@@ -1795,10 +1793,10 @@ function render_record(user_data){
     }else{
         on_which_date = on_which_date + String(date);
     };
-    on_date_utc = now_utc; 
-    on_date_format = show_date_format; 
-    get_record(now_utc,show_date_format);
-    render_sidebar(user_data); //check render side bar : id="remind" is yes or no, if no, show reminder
+    on_date_utc = now_utc;
+    on_date_format = show_date_format;
+    get_record(now_utc, show_date_format);
+    render_sidebar(user_data); //check render side bar : id="remind" is yes or no, if yes, show reminder
 };
 
 
