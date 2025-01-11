@@ -1,6 +1,7 @@
 from django.contrib import auth
 from django.db import IntegrityError
 from django.db.models import Q
+from django.shortcuts import redirect
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from rest_framework.decorators import api_view, permission_classes
@@ -9,9 +10,10 @@ from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from authen.models import UserProfile
 from authen.decorators import *
-from datetime import datetime, timezone
+from django.utils import timezone
 from utils.exceptions import *
 from authen.serializers import UserProfileSerializer
+from plans.models import *
 
 User = get_user_model()
 
@@ -23,8 +25,7 @@ def signup(request):
     name = signup_data.get('name', None)
     password = signup_data.get('password', None)
     identity = signup_data.get('identity', None)
-    local_dt = datetime.now()
-    utc_dt = local_dt.astimezone(timezone.utc)
+    utc_dt = timezone.now()
     if not all([email, name, password, identity]):
         return MissingInputError("Please provide complete info")()
     else:
@@ -54,6 +55,15 @@ def signin(request):
     user_profile = user.userprofile
     auth.login(request, user)
     return Response({'initial': user_profile.first_login}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def signout(request):
+    response = redirect("home")
+    response.delete_cookie("csrftoken")
+    auth.logout(request)
+
+    return response
 
 
 
@@ -102,8 +112,9 @@ class UserViewSet(viewsets.GenericViewSet):
         UserProfile.objects.filter(pk=user_profile.id).\
             update(first_login=False, **final_data)
         #calculate recommended plan and insert in db
-
-
+        recommended_plan = Plan.calc_plan(final_data)
+        recommended_plan["user_id"] = user.id
+        Plan.objects.create(**recommended_plan)
         # historical reason: set `remind` in cookie for frontend to decide
         # whether show complete record page
         response = Response({'ok': True}, status=status.HTTP_200_OK)
@@ -114,6 +125,3 @@ class UserViewSet(viewsets.GenericViewSet):
             httponly=True,
         )
         return response
-
-
-

@@ -469,16 +469,14 @@ function handleSignIn(){
 //處理登出事件
 async function handleSignOut(){
     try{
-        let response = await fetch('/api/users/signout',{method: 'delete'});
+        let response = await fetch('/authen/signout/',{method: 'delete'});
         if(response.ok){ //200情況下
-               localStorage.removeItem('JWT');
-               let identity = document.getElementById('user-email').getAttribute("identity")
-               if(identity==="2"){
-                   nutri_socket.emit("signout_disconnect");
-               }else{
-                   user_socket.emit("signout_disconnect");
-               }
-               window.location.replace('/');
+               //let identity = document.getElementById('user-email').getAttribute("identity")
+               //if(identity==="2"){
+               //    nutri_socket.emit("signout_disconnect");
+               //}else{
+               //    user_socket.emit("signout_disconnect");
+               //}
         }
     }catch(message){
         console.log(`${message}`)

@@ -1602,17 +1602,20 @@ function render_health_helper(navmenu){
 /* log out */
 async function log_out(){
     try{
-        let response = await fetch('/api/users/signout',{method: 'DELETE'});
-        let result = await response.json();    
-        console.log(result);                            
-        if(response.ok){ 
-               localStorage.removeItem('JWT');
-               window.location.reload();
-        };
+        await fetch('/authen/signout/',{
+            method: 'POST',
+            headers: {'X-CSRFToken': getCsrfToken()}
+        })
+        .then(response => {
+            // Check if it's a redirect
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
+        });
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    };     
+    };
 };
 
 
@@ -1620,20 +1623,17 @@ function render_log_out(navmenu){
     let logout_div = document.createElement("div");
     logout_div.classList.add("logout");
     logout_div.appendChild(document.createTextNode("Logout"));
-    logout_div.addEventListener("click",function(){ 
+    logout_div.addEventListener("click",function(){
         log_out();
         //emit one event to server
         if(user_socket){
-            user_socket.emit("user_log_out"); 
+            user_socket.emit("user_log_out");
         }else if(nutri_socket){
             nutri_socket.emit("nutri_log_out")
         };
     });
     navmenu.appendChild(logout_div);
 };
-
-
-
 
 
 //side bar
