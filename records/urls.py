@@ -4,6 +4,7 @@ from records.views import *
 
 urlpatterns = [
     path('daily-record/', RecordViewSet.as_view(actions={
-        "get": "retrieve"
+        "get": "retrieve",
+        "post": "create"
     }))
 ]

@@ -24,4 +24,5 @@ urlpatterns = [
     path('record/', RecordPageView.as_view(), name='record'),
     re_path(r'^authen/', include("authen.urls")),
     re_path(r'^records/', include("records.urls")),
+    re_path(r'^plans/', include("plans.urls")),
 ]

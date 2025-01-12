@@ -8,7 +8,7 @@ User = get_user_model()
 
 # Create your models here.
 class Plan(models.Model):
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     protein = models.IntegerField()
     carbs = models.IntegerField()
@@ -36,11 +36,9 @@ class Plan(models.Model):
         }
         tdee = bmr * pal[input["habit"]]
         calos = int(tdee * calo_degree[input["target"]])
-        create_at = timezone.now()
         plan_name = "Recommended plan by system"
         recommended = {
                         "plan_name": plan_name,
-                        "created_at": create_at,
                         "plan_calories": calos,
                         "protein": 40,
                         "fat": 30,

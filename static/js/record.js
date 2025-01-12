@@ -7,7 +7,7 @@ let new_target_protein;
 let new_target_fat;
 let new_target_carbs;
 let select_diet_plan_id; //diet plan id for loading
-let my_plan_page = 0; // diet plan page
+let my_plan_page = 0; // diet plan page ; update: means last query item pk
 let can_get_my_plan = true;
 let public_food_page = 0; //searching public food page & lock
 let search_times = 0;
@@ -198,7 +198,7 @@ function create_plan_tr_load(plan){
             previous_selected.classList.toggle("selected");
         };
         select_diet_plan_id = this.id;
-        this.classList.toggle("selected");    
+        this.classList.toggle("selected");
     });
     let th = document.createElement("th");
     th.classList.add("plan-name");
@@ -1031,7 +1031,7 @@ function createBack(){
 };
 
 
-//pop out editing window 
+//pop out editing window
 function pop_edit_window(background){
     let edit_box = document.createElement("div");
     edit_box.classList.add("edit-box");
@@ -1448,7 +1448,7 @@ function show_right_section(record_container, day_record, food_record){
 };
 
 
-//跳出deit plan框框給使用者選擇載入
+//跳出diet plan框框給使用者選擇載入
 function pop_load_diet_plan(background){
     let load_plan_box = document.createElement("div");
     load_plan_box.classList.add("load-plan-box");
@@ -1479,7 +1479,7 @@ function pop_load_diet_plan(background){
         if(this.scrollHeight-this.scrollTop <= this.clientHeight){
             if(can_get_my_plan && my_plan_page){
                 can_get_my_plan = false;
-                get_diet_plan(my_plan_page,"forload");
+                get_diet_plan(my_plan_page, "forload");
             };
         };
     });
@@ -1498,7 +1498,7 @@ function pop_load_diet_plan(background){
     table.appendChild(thead);
     let tbody = document.createElement("tbody");
     tbody.classList.add("plan-body");
-    get_diet_plan(my_plan_page,"forload"); //取得飲食計畫 ,先傳入預設0的my_plan_page
+    get_diet_plan(my_plan_page, "forload"); //取得飲食計畫 ,先傳入預設0的my_plan_page
     table.appendChild(tbody);
     //add loading effect first
     let svg = generate_loading();
@@ -1563,19 +1563,17 @@ function pop_load_diet_plan(background){
 }
 
 //click on load from diet plan
-async function get_diet_plan(plan_page,purpose){ 
-    let jwt = localStorage.getItem("JWT");
+async function get_diet_plan(last_item_pk, purpose){
     try{
-        let response = await fetch(`/api/plans?page=${plan_page}`,{
-                                                method: 'get',
-                                                headers: {"Authorization" : `Bearer ${jwt}`}
+        let response = await fetch(`/plans/diet-plan/?last_item_pk=${last_item_pk}`,{
+                                                method: 'GET',
                                                 });
-        let result = await response.json();                                
+        let result = await response.json();
         if(response.ok){  //get memebr's diet plan
             let spinner = document.querySelector(".spinner");
             if(spinner){
                 spinner.remove();
-            }; 
+            };
             let tbody = document.querySelector(".plan-body");
             let plans = result.plans;
             if(plans.length!==0){
@@ -1587,23 +1585,21 @@ async function get_diet_plan(plan_page,purpose){
                         tr = create_plan_tr_edit(plans[i]);
                     };
                     tbody.appendChild(tr);
-                };  
-                feather.replace();      
+                };
+                feather.replace();
             };
-            let next_page = result["nextPage"];
-            my_plan_page = next_page;    
+            let last_item_pk = result["last_item_pk"];
+            my_plan_page = last_item_pk; // rewite my_plan_page means last query item pk
             can_get_my_plan = true;
-        }else if(response.status === 403){ 
-            console.log('JWT已失效,請重新登入');
-            localStorage.removeItem("JWT");
+        }else if(response.status === 403){
             window.location.href = '/';
-        }else if(response.status === 500){ 
+        }else if(response.status === 500){
             console.log(result);
         };
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    }; 
+    };
 
 };
 
@@ -1625,14 +1621,12 @@ async function post_select_plan(payload, date_format){
                 document.body.removeChild(bg[0]);
             };
             //re-render record section
-            let timestamp = JSON.parse(payload)["create_at"];
+            let timestamp = JSON.parse(payload)["created_at"];
             get_record(timestamp, date_format);
             // set back
             can_get_my_plan = true;
             my_plan_page = 0;
         }else if (response.status === 403){
-            console.log('JWT已失效,請重新登入');
-            localStorage.removeItem("JWT");
             window.location.href = '/';
         }else if (response.status === 400){
             console.log(result);
@@ -1673,7 +1667,7 @@ function create_blank_content(){ //used in show_empty
         payload["carbs"]=40;
         payload["fat"]=30;
         //take gloabl variables
-        payload["create_at"]=on_date_utc;
+        payload["created_at"]=on_date_utc;
         payload = JSON.stringify(payload);
         post_select_plan(payload, on_date_format);
     });

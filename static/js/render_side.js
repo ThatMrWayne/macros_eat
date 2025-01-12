@@ -785,22 +785,20 @@ async function delete_plan(plan_id_token){
         let response = await fetch('/api/plans?plan_id='+plan_id,{
                                                     method: 'delete',
                                                     headers: {"Authorization" : `Bearer ${jwt}`}
-                                                });                               
-        if(response.status===204){  
+                                                });
+        if(response.status===204){
             //re get_diet_plan
             let tbody = document.querySelector(".plan-body");
             while(tbody.firstChild){
-                tbody.firstChild.remove(); 
-            };    
+                tbody.firstChild.remove();
+            };
             my_plan_page = 0;
-            get_diet_plan(my_plan_page,"foredit");
-        }else if(response.status === 400){ 
+            get_diet_plan(my_plan_page, "foredit");
+        }else if(response.status === 400){
             console.log("刪除失敗");
-        }else if(response.status === 403){ 
-            console.log("JWT失效,拒絕存取");
-            localStorage.removeItem("JWT");
-            window.location.replace("/"); 
-        }else if(response.status === 500){ 
+        }else if(response.status === 403){
+            window.location.replace("/");
+        }else if(response.status === 500){
                 console.log("伺服器錯誤");
         };
     }catch(message){
@@ -818,15 +816,15 @@ async function add_diet_plan(payload,jwt){
                                      body : payload,
                                      headers: {"Authorization" : `Bearer ${jwt}`,'Content-Type': 'application/json'}
                                     });
-        let result = await response.json();                            
-        if(response.status === 201){ 
+        let result = await response.json();
+        if(response.status === 201){
             //call get_diet_plan,set my_plan_page = 0,clear out tbody
             let tbody = document.querySelector(".plan-body");
             while(tbody.firstChild){
-                tbody.firstChild.remove(); 
+                tbody.firstChild.remove();
             };    
             my_plan_page = 0;
-            get_diet_plan(my_plan_page,"foredit");    
+            get_diet_plan(my_plan_page, "foredit");
             let protein = document.getElementsByName("new-plan_protein")[0];
             let fat = document.getElementsByName("new-plan_fat")[0];
             let carbs = document.getElementsByName("new-plan_carbs")[0];
@@ -968,11 +966,11 @@ function render_my_plan_window(background){
     break_line.classList.add("break");
     let diet_plan = document.createElement("div");
     diet_plan.classList.add("diet-plan");//
-    diet_plan.addEventListener("scroll",function(){ 
+    diet_plan.addEventListener("scroll",function(){
         if(this.scrollHeight-this.scrollTop <= this.clientHeight){
             if(can_get_my_plan && my_plan_page){
                 can_get_my_plan = false;
-                get_diet_plan(my_plan_page,"foredit");
+                get_diet_plan(my_plan_page, "foredit");
             };
         };
     });
@@ -991,7 +989,7 @@ function render_my_plan_window(background){
     table.appendChild(thead);
     let tbody = document.createElement("tbody");
     tbody.classList.add("plan-body");
-    get_diet_plan(my_plan_page,"foredit"); //get diet plan 
+    get_diet_plan(my_plan_page, "foredit"); //get diet plan
     table.appendChild(tbody);
     //add loading effect first
     let svg = generate_loading();
@@ -1064,7 +1062,7 @@ function render_my_plan_window(background){
     input_calories.setAttribute("min","0");
     input_calories.setAttribute("name","new-plan_calories");
     add_plan_calories.appendChild(div_calories);
-    add_plan_calories.appendChild(input_calories); 
+    add_plan_calories.appendChild(input_calories);
     //reminder
     let remind = document.createElement("div");
     remind.classList.add("add-plan-reminder");
@@ -1082,7 +1080,7 @@ function render_my_plan_window(background){
     let span_cancel = document.createElement("span");
     span_cancel.classList.add("cancel-select");
     span_cancel.innerHTML="Cancel";
-    span_cancel.addEventListener("click",function(){ 
+    span_cancel.addEventListener("click",function(){
         document.body.classList.toggle("stop-scrolling");
         let bg = document.getElementsByClassName('bg');
         document.body.removeChild(bg[0]);
@@ -1095,11 +1093,11 @@ function render_my_plan_window(background){
     span_select.addEventListener("click",function(){ //click on adding new diet plan
         let validate = validate_new_plan();
         if(validate){
-            can_get_my_plan = false; 
+            can_get_my_plan = false;
             let jwt = localStorage.getItem("JWT");
             let json_data = organize_new_plan();
             add_diet_plan(json_data,jwt);
-        };     
+        };
     });
     span_select.innerHTML="Save change";
     select_btn.appendChild(span_cancel);
@@ -1126,7 +1124,7 @@ function render_my_plan(navmenu){
     let span = document.createElement("span");
     span.setAttribute("id","dietplan");
     span.appendChild(document.createTextNode("My Diet Plan"));
-    span.addEventListener("click",function(){ 
+    span.addEventListener("click",function(){
         let bg = render_my_plan_window(createBack());
         document.body.appendChild(bg);
         let remind = document.querySelector(".remind");
