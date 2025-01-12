@@ -13,6 +13,14 @@ class Record(models.Model):
     fat = models.IntegerField()
     plan_calories = models.IntegerField()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'created_at'],
+                name='unique_user_created_at'
+            )
+        ]
+
 
 class Intakes(models.Model):
     record = models.ForeignKey(Record, on_delete=models.CASCADE)

@@ -1,13 +1,9 @@
 /*body margin設為0*/
 body{
     margin: 0px;
-    /*font-family:"Caveat Brush,cursive,Noto Sans TC, sans-serif";*/
     position: relative;
     min-height: 100vh;
-    font-family: 'Caveat Brush', cursive;
-    font-family: 'Grape Nuts', cursive;
-    font-family: 'Permanent Marker', cursive;
-    font-family: 'Rubik Bubbles', cursive;
+    font-family: 'Caveat Brush', 'Grape Nuts', 'Permanent Marker', cursive;
 }
 /*section1的部分*/
 .section-1{
@@ -17,7 +13,6 @@ body{
     width:100%;
     background: #2D303C; /*要設定白色要不然往下滑時,下面的內容會透過去選單列*/
     height: 90px;
-    
 }
 /*選單列外容器*/
 .nav{

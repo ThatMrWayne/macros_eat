@@ -38,3 +38,4 @@ class UserProfile(models.Model):
     height = models.FloatField(blank=True, null=True)
     weight = models.FloatField(blank=True, null=True)
     age = models.IntegerField(null=True)
+    name = models.TextField(default="")

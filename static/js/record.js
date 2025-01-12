@@ -1,6 +1,6 @@
 let record_id;
 let on_which_date;  //what date currently on
-let on_date_utc;    //what date currently on in timestamp
+let on_date_utc;    //what date currently on in utc timestamp
 let on_date_format; //what date currently on in display format
 let new_target_calories; //nutrition after edited
 let new_target_protein;
@@ -732,10 +732,10 @@ function pop_input_directly(background){
 
 
 //render what had been eaten section
-function show_consume(main_container,food_record){
+function show_consume(main_container, food_record){
     let tbody = document.querySelector(".food-body");
-    //if "record-containe" already existed then don't produce 
-    if(document.querySelector(".record-container") && tbody){ 
+    //if "record-containe" already existed then don't produce
+    if(document.querySelector(".record-container") && tbody){
         //only change the "tr" content inside food-body(remove old ones first)
         while(tbody.firstChild){
             tbody.removeChild(tbody.firstChild);
@@ -746,7 +746,7 @@ function show_consume(main_container,food_record){
                 let tr = create_tr(food_record[i]);
                 tbody.appendChild(tr);
             };
-            feather.replace(); 
+            feather.replace();
         };
     }else{
         let start_record = document.querySelector(".start-record");
@@ -1357,14 +1357,14 @@ function show_chart_section(right_record,day_record,food_record){
 
 
 
-function show_right_section(record_container,day_record,food_record){
+function show_right_section(record_container, day_record, food_record){
     if(document.querySelector(".right-record")){ //if right-record existed
         //only update current status : calories,protein,carbs,fat
         let current_calo = document.querySelector(".current-calo");
         let current_p = document.querySelector(".current-protein_g");
         let current_c = document.querySelector(".current-carbs_g");
         let current_f = document.querySelector(".current-fat_g");
-        if(food_record){ 
+        if(food_record){
             let protein=0;
             let fat=0;
             let carbs=0;
@@ -1374,7 +1374,7 @@ function show_right_section(record_container,day_record,food_record){
                 fat+=food_record[i]["fat"];
                 carbs+=food_record[i]["carbs"];
             };
-            calories = Math.round((protein*4)+(fat*9)+(carbs*4)) 
+            calories = Math.round((protein*4)+(fat*9)+(carbs*4))
             protein = protein.toFixed(1)+"g"
             carbs = carbs.toFixed(1)+"g";
             fat = fat.toFixed(1)+"g";
@@ -1382,7 +1382,7 @@ function show_right_section(record_container,day_record,food_record){
             current_p.innerHTML = protein;
             current_c.innerHTML = carbs;
             current_f.innerHTML = fat;
-        }else{ 
+        }else{
             let protein="0"+"g";
             let fat="0"+"g";
             let carbs="0"+"g";
@@ -1393,7 +1393,7 @@ function show_right_section(record_container,day_record,food_record){
             current_f.innerHTML = fat;
         };
         //only update target : calories,protein,carbs,fat
-        let plan_calo = document.querySelector(".plan-calo"); 
+        let plan_calo = document.querySelector(".plan-calo");
         plan_calo.innerHTML = day_record["plan_calories"];
         let plan_p = document.querySelector(".plan-protein");
         let plan_p_g = "~"+String(Math.round((day_record["plan_calories"]*day_record["protein"]/100)/4))+"g"
@@ -1410,7 +1410,7 @@ function show_right_section(record_container,day_record,food_record){
         plan_f.innerHTML = plan_f_g;
         let percent_fat = document.querySelector(".percent-fat")
         percent_fat.innerHTML = "("+String(day_record["fat"])+"%"+")";
-        //only update pie 
+        //only update pie
         let canvas = Chart.getChart("pfc");
         canvas.destroy();
         let pie = document.getElementById("pfc").getContext("2d");
@@ -1608,23 +1608,25 @@ async function get_diet_plan(plan_page,purpose){
 };
 
 
-async function post_select_plan(payload,jwt,date_format){ 
+async function post_select_plan(payload, date_format){
     try{
-        let response = await fetch('/api/records',{
-                                     method: 'post',
+        let response = await fetch('/records/daily-record/',{
+                                     method: 'POST',
                                      body : payload,
-                                     headers: {"Authorization" : `Bearer ${jwt}`,'Content-Type': 'application/json'}
+                                     headers: {
+                                        'X-CSRFToken': getCsrfToken(),
+                                        'Content-Type': 'application/json'}
                                     });
-        let result = await response.json();                            
-        if(response.status === 201){ 
+        let result = await response.json();
+        if(response.status === 201){
             let bg = document.getElementsByClassName('bg');
             if(bg[0]){
                 document.body.classList.toggle("stop-scrolling");
-                document.body.removeChild(bg[0]); 
-            }; 
+                document.body.removeChild(bg[0]);
+            };
             //re-render record section
             let timestamp = JSON.parse(payload)["create_at"];
-            get_record(timestamp,date_format);
+            get_record(timestamp, date_format);
             // set back
             can_get_my_plan = true;
             my_plan_page = 0;
@@ -1640,22 +1642,21 @@ async function post_select_plan(payload,jwt,date_format){
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    }    
+    }
 }
 
 
-
 function create_blank_content(){ //used in show_empty
-    let start_record = document.createElement("div"); 
+    let start_record = document.createElement("div");
     start_record.classList.add("start-record");
-    let start_box = document.createElement("div"); 
-    start_box.classList.add("start-box"); 
-    let contain = document.createElement("div"); 
-    contain.classList.add("contain"); 
-    let start_title = document.createElement("div"); 
+    let start_box = document.createElement("div");
+    start_box.classList.add("start-box");
+    let contain = document.createElement("div");
+    contain.classList.add("contain");
+    let start_title = document.createElement("div");
     start_title.setAttribute("id","start-title");
     start_title.appendChild(document.createTextNode("No plan on this day yet."));
-    let from_plan = document.createElement("div"); 
+    let from_plan = document.createElement("div");
     from_plan.setAttribute("id","from-plan");
     from_plan.appendChild(document.createTextNode("Load from your diet plan"));
     from_plan.addEventListener("click",function(){  //load from plan event
@@ -1666,7 +1667,6 @@ function create_blank_content(){ //used in show_empty
     from_scratch.setAttribute("id","from-scratch");
     from_scratch.appendChild(document.createTextNode("Create a default plan"));
     from_scratch.addEventListener("click",function(){ //add default plan
-        let jwt = localStorage.getItem("JWT");
         let payload={};
         payload["plan_calories"] = 2000; //default 40 30 30  2000kcals
         payload["protein"]=30;
@@ -1675,14 +1675,14 @@ function create_blank_content(){ //used in show_empty
         //take gloabl variables
         payload["create_at"]=on_date_utc;
         payload = JSON.stringify(payload);
-        post_select_plan(payload,jwt,on_date_format);
+        post_select_plan(payload, on_date_format);
     });
     contain.appendChild(start_title);
     contain.appendChild(from_plan);
     contain.appendChild(from_scratch);
     start_box.appendChild(contain);
     start_record.appendChild(start_box);
-    return start_record;    
+    return start_record;
 };
 
 
@@ -1732,46 +1732,44 @@ function show_empty(){
 // /api/records
 async function get_record(timestamp, show_date_format){
     try{
-        let response = await fetch('/api/records?datetime='+String(timestamp),{
-                                                    method: 'get',
-                                                    headers: {'X-CSRFToken': getCsrfToken()}
+        let response = await fetch('/records/daily-record/?datetime='+String(timestamp),{
+                                                    method: 'GET',
                                                 });
         let result = await response.json();
-        if(response.ok){  
+        if(response.ok){
             //1.remove loading animation
             let main_container = document.querySelector(".main-container");
             let loading = document.getElementById("loading");
             if(loading){
-                main_container.removeChild(loading); 
+                main_container.removeChild(loading);
             };
             //2.show date
-            show_date(main_container,show_date_format);
+            show_date(main_container, show_date_format);
             if(result["day_record"]){  //3.means have record on that day
                 record_id = result["day_record"]["record_id"]
                 day_record = result["day_record"];
                 food_record = result["food_record"];
-                show_consume(main_container,food_record);
+                show_consume(main_container, food_record);
                 let record_container = document.querySelector(".record-container");
-                show_right_section(record_container,day_record,food_record);
+                show_right_section(record_container, day_record, food_record);
             }else{ //3.means no record
                 record_id = null;
                 show_empty()
-            };    
+            };
         }else if(response.status === 400){ //
                 showMessage(result.message,true,null);
                 let mail_input = document.querySelector('.email');
                 let pass_input = document.querySelector('.pass');
                 mail_input.value='';
-                pass_input.value=''; 
-        }else if(response.status === 500){ //如果是500,代表伺服器(資料庫)內部錯誤
+                pass_input.value='';
+        }else{ //如果是500,代表伺服器(資料庫)內部錯誤
                 showMessage(result.message,true,null);
         };
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    }; 
+    };
 };
-
 
 
 function render_record(user_data){

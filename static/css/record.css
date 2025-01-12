@@ -27,11 +27,8 @@ div{
 }
 .navmenu-brand-logo{
     color:#F0754F;
-    font-family: 'Caveat Brush', cursive;
-    font-family: 'Grape Nuts', cursive;
-    font-family: 'Permanent Marker', cursive;
-    font-family: 'Rubik Bubbles', cursive;
-    font-size: 38px;
+    font-family: 'Caveat Brush', 'Grape Nuts', 'Permanent Marker', 'Rubik Bubbles', cursive;
+    font-size: 42px;
     flex: none;
     position: relative;
     left: 30px;
@@ -599,8 +596,9 @@ td {
 }
 .username{
     vertical-align: middle;
-    font-size: 23px;
+    font-size: 30px;
     color: aliceblue;
+    font-family: cursive;
 }
 
 
@@ -610,7 +608,7 @@ td {
     padding-left: 30px;
     text-align:left;
     margin-top: 20px;
-    font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif
+    font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', 'sans-serif'
 }
 
 #myfood:hover,#dietplan:hover,#weightrecord:hover,#dailyrecord:hover,#healthhelper:hover{
@@ -1360,7 +1358,7 @@ table.plan-table {
         stroke-dashoffset: 0;
         transform-origin: center;
         animation:
-            dash 1.4s ease-in-out infinite, 
+            dash 1.4s ease-in-out infinite,
             colors 5.6s ease-in-out infinite;
 }
 
@@ -1370,7 +1368,14 @@ table.plan-table {
     justify-content: flex-start;
     align-items: center;
     background-color: white;
-    font-size: 26px;
+    font-size: 42px;
+}
+#start-title{
+    font-size: 40px;
+}
+
+#from-plan, #from-scratch{
+    font-size: 30px;
 }
 
 /* scrolling food loading effect */

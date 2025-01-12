@@ -5,6 +5,10 @@ from authen.models import UserProfile
 class UserProfileSerializer(serializers.ModelSerializer):
     identity = serializers.SerializerMethodField()
     initial = serializers.SerializerMethodField()
+    member_id = serializers.SerializerMethodField()
+
+    def get_member_id(self, instance):
+        return instance.id
 
     def get_identity(self, instance):
         identity_map = {
@@ -19,7 +23,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = (
-            "id",
+            "member_id",
             "identity",
-            "initial"
+            "initial",
+            "name"
         )

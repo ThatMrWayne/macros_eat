@@ -47,8 +47,8 @@ function render_user_profile(navmenu,user_data){
     span.setAttribute("memberid",user_data["member_id"]);
     span.setAttribute("identity",1);
     span.appendChild(document.createTextNode(user_data["name"]));
-    span.addEventListener("click",function(){ 
-        render_member_page(); 
+    span.addEventListener("click",function(){
+        render_member_page();
     });
     user_profile.appendChild(img);
     user_profile.appendChild(span);

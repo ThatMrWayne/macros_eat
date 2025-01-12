@@ -31,7 +31,7 @@ def signup(request):
     else:
         try:
             user = User.objects.create_user(username=name, password=password, email=email ,date_joined=utc_dt)
-            UserProfile.objects.create(user=user, identity=identity)
+            UserProfile.objects.create(user=user, identity=identity, name=name)
         except IntegrityError:
             return AlreadyExistError("username or email already exist.")()
     return Response({'status':'ok'}, status=status.HTTP_201_CREATED)
@@ -64,7 +64,6 @@ def signout(request):
     auth.logout(request)
 
     return response
-
 
 
 class UserViewSet(viewsets.GenericViewSet):
