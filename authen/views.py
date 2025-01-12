@@ -95,7 +95,7 @@ class UserViewSet(viewsets.GenericViewSet):
         }
         gender_map = {
             1: "male",
-            2: "female"
+            0: "female"
         }
         final_data = {}
         for label in labels:

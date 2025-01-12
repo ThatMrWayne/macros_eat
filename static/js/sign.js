@@ -20,11 +20,8 @@ let sign = {
 
 //動態顯示填資料表格
 function render_fillin(on_record_page=false){
-    console.log('呵呵呵')
     if(on_record_page===true){
-        console.log('gggg');
         let navmenu = document.querySelector(".navmenu");
-        console.log('ggggkk');
         let maincontainer = document.querySelector(".main-container");
         document.body.removeChild(navmenu);
         document.body.removeChild(maincontainer);
