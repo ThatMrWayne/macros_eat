@@ -18,21 +18,18 @@ function lock_food(food){
     select_food["protein"] = Number(food.getAttribute("protein"));
     select_food["fat"] = Number(food.getAttribute("fat"));
     select_food["carbs"] = Number(food.getAttribute("carbs"));
-}; 
+};
 
 
-
-async function get_food(food,jwt,page){
+async function get_food(food, page){
     try{
-        let response  = await fetch(`/api/public-food?keyword=${food}&page=${page}`,
-                                    {headers: {"Authorization" : `Bearer ${jwt}`}
-                                    });
+        let response  = await fetch(`/food/public-food/?keyword=${food}&page=${page}`);
         let data = await response.json();
         return data;
     }catch(message){
         console.log(`${message}`);
         throw Error('Fetching was not ok!!.');
-    };    
+    };
 };
 
 
@@ -92,20 +89,19 @@ function create_search_li(food){
         let p = e.target.getAttribute("protein");
         let f = e.target.getAttribute("fat");
         let c = e.target.getAttribute("carbs");
-        show_food_info(p,f,c); 
+        show_food_info(p,f,c);
     });
-    li.addEventListener("mouseleave",function(){ 
+    li.addEventListener("mouseleave",function(){
         let info_box = document.querySelector(".info-box");
         if(info_box){
             info_box.remove();
         };
     });
-    li.addEventListener("click",function(){ 
-        lock_food(this); 
-    });  
-    return li;  
+    li.addEventListener("click",function(){
+        lock_food(this);
+    });
+    return li
 };
-
 
 
 
@@ -131,13 +127,12 @@ function render_data(data){
             let li = create_search_li(data[i]);
             ul.appendChild(li);  
         };
-        ul.addEventListener("scroll",function(){ 
+        ul.addEventListener("scroll",function(){
             if(this.scrollHeight-this.scrollTop <= this.clientHeight){
                 if(can_get_public_food_scroll && public_food_page){
                     can_get_public_food_scroll = false;
-                    let jwt = localStorage.getItem("JWT");
                     let keyword = document.getElementById("food_name").value;
-                    let promise = get_food(keyword,jwt,public_food_page);
+                    let promise = get_food(keyword, public_food_page);
                     promise.then((result)=>{
                         can_get_public_food_scroll = true;
                         let next_page = result["nextPage"];

@@ -130,20 +130,18 @@ async function add_intake(payload, method){
             group.amount[1] = percentage_c;
             group.amount[2] = percentage_f;
             let PieChart = new Chart(pie,{type:'pie',data:DataEC, options: {plugins:optionsEC}});
-        }else if(response.status === 400){ 
+        }else if(response.status === 400){
             console.log("新增失敗");
-        }else if(response.status === 403){ 
-            console.log("JWT失效,拒絕存取");
-            localStorage.removeItem("JWT");
-            window.location.replace("/"); 
-        }else if(response.status === 500){ 
+        }else if(response.status === 403){
+            window.location.replace("/");
+        }else if(response.status === 500){
                 console.log("伺服器錯誤");
         };
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    };    
-};
+    };
+}
 
 
 //create tr tag for food had been eaten
@@ -225,14 +223,13 @@ function search(){
     let value = document.getElementById("food_name").value;
     can_get_public_food_scroll = true;
     public_food_page = 0;
-    let jwt = localStorage.getItem("JWT");
-    let search_promise = get_food(value,jwt,public_food_page);
+    let search_promise = get_food(value, public_food_page);
     search_promise.then((result)=>{
         if(document.getElementById("food_name").value.length!==0){
             let next_page = result["nextPage"];
             public_food_page = next_page;
             render_data(result.data);
-        };    
+        };
     });
 }
 
@@ -386,7 +383,6 @@ function pop_search_food(background){
         if(result){  //submit
             select_food["calories"] = consume_calo;
             let payload = {
-                "create_at" : on_date_utc,
                 "record_id" : record_id,
                 "food_name" : select_food["food_name"],
                 "protein" : consume_protein,
@@ -409,11 +405,11 @@ function pop_search_food(background){
             }).catch((msg)=>{
                 console.log(msg);
             });
-        }else{ 
+        }else{
             let message = "Please confirm input is completed.";
             console.log(message);
-            //show_reminder(message); 
-        };                   
+            //show_reminder(message);
+        };
     });
     let close_btn = document.createElement("span");
     close_btn.classList.add("close-add-search");
@@ -783,7 +779,7 @@ function show_consume(main_container, food_record){
         load_from_food.classList.add("load-from-food");
         let load_from_span = document.createElement("span");
         load_from_span.appendChild(document.createTextNode("Load from My Food"));
-        load_from_food.appendChild(load_from_span); 
+        load_from_food.appendChild(load_from_span);
         load_from_span.addEventListener("click",function(){ //click to show "load form my food" box
             let bg = render_my_food_window_load(createBack());
             document.body.appendChild(bg);

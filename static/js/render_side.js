@@ -1,6 +1,6 @@
 let my_food_page = 0;
 let my_food_page_load = 0;
-let can_get_my_food = true; 
+let can_get_my_food = true;
 let weight_action = true;
 let already_on_weight_page = false; //check if on weight record page
 let already_on_record_page = true; // check if on record page
@@ -77,19 +77,17 @@ function render_nutri_profile(navmenu,nutri_data){
 
 
 /* my food part  */
-async function get_my_food(food_page,purpose){ //after get_my_food then render_my_food
-    let jwt = localStorage.getItem("JWT");
+async function get_my_food(food_page, purpose){ //after get_my_food then render_my_food
     try{
-        let response = await fetch('/api/my-food?page='+food_page,{ //origin page is 0
-                                                    method: 'get',
-                                                    headers: {"Authorization" : `Bearer ${jwt}`}
+        let response = await fetch(`/food/my-food/?last_item_pk=${food_page}`,{ //origin page is 0
+                                                    method: 'GET',
                                                 });
-        let result = await response.json();                                
-        if(response.ok){ 
+        let result = await response.json();
+        if(response.ok){
             let spinner = document.querySelector(".spinner");
             if(spinner){
                 spinner.remove();
-            }; 
+            };
             let tbody = document.querySelector(".my-food-body");
             let food = result["data"];
             if(food.length!==0){
@@ -103,55 +101,17 @@ async function get_my_food(food_page,purpose){ //after get_my_food then render_m
                     tbody.appendChild(tr);
                 };
                 feather.replace();
-            }    
-            let next_page = result["nextPage"];
+            }
+            let last_item_pk = result["last_item_pk"];
             if(purpose==="foredit"){
-                my_food_page = next_page;
+                my_food_page = last_item_pk;
             }else{
-                my_food_page_load =next_page;
-            };  
-            can_get_my_food = true;      
+                my_food_page_load = last_item_pk;
+            };
+            can_get_my_food = true;
         }else if(response.status === 403){ //
-            console.log("JWT失效,拒絕存取");
-            localStorage.removeItem("JWT");
             window.location.replace("/"); //導回首頁,重新登入;
         }else if(response.status === 500){ //如果是500,代表伺服器(資料庫)內部錯誤
-            console.log("伺服器錯誤");    
-        };
-    }catch(message){
-        console.log(`${message}`)
-        throw Error('Fetching was not ok!!.')
-    }; 
-};
-
-
-
-async function delete_my_food(food_id){
-    let jwt = localStorage.getItem("JWT");
-    try{
-        let response = await fetch('/api/my-food?food_id='+food_id,{
-                                                    method: 'delete',
-                                                    headers: {"Authorization" : `Bearer ${jwt}`}
-                                                });                               
-        if(response.status===204){  //204 
-            //cal  get_my_food,set my_food_page = 0,clear out tbody
-            let tbody = document.querySelector(".my-food-body");
-            while(tbody.firstChild){
-                tbody.firstChild.remove(); 
-            };
-            //add loading effect
-            let table = document.querySelector(".my-food-table");
-            let svg = generate_loading();
-            table.appendChild(svg);
-            my_food_page = 0;
-            get_my_food(my_food_page,"foredit");      
-        }else if(response.status === 400){ 
-            console.log("刪除失敗");
-        }else if(response.status === 403){ 
-            console.log("JWT失效,拒絕存取");
-            localStorage.removeItem("JWT");
-            window.location.replace("/"); 
-        }else if(response.status === 500){ 
             console.log("伺服器錯誤");
         };
     }catch(message){
@@ -162,8 +122,39 @@ async function delete_my_food(food_id){
 
 
 
+async function delete_my_food(food_id){
+    try{
+        let response = await fetch(`/food/my-food/${food_id}/`,{
+                                                    method: 'DELETE',
+                                                    headers: {'X-CSRFToken': getCsrfToken()}
+                                                });
+        if(response.status===204){
+            //cal  get_my_food,set my_food_page = 0,clear out tbody
+            let tbody = document.querySelector(".my-food-body");
+            while(tbody.firstChild){
+                tbody.firstChild.remove();
+            };
+            //add loading effect
+            let table = document.querySelector(".my-food-table");
+            let svg = generate_loading();
+            table.appendChild(svg);
+            my_food_page = 0;
+            get_my_food(my_food_page,"foredit");
+        }else if(response.status === 400){
+            console.log("刪除失敗");
+        }else if(response.status === 403){
+            window.location.replace("/");
+        }else if(response.status === 500){
+            console.log("伺服器錯誤");
+        };
+    }catch(message){
+        console.log(`${message}`)
+        throw Error('Fetching was not ok!!.')
+    };
+};
 
-//my food tr(edit) 
+
+//my food tr(edit)
 function create_my_tr_edit(food){
     let tr = document.createElement("tr");
     tr.classList.add("food-item");
@@ -183,9 +174,9 @@ function create_my_tr_edit(food){
     td_delete.classList.add("delete");
     td_delete.setAttribute("id",food["food_id"]); //put food_id inside garbage can
     let delete_icon = document.createElement("i");
-    delete_icon.setAttribute("data-feather","trash");    
-    td_delete.addEventListener("click",function(){ 
-        can_get_my_food = false; 
+    delete_icon.setAttribute("data-feather","trash");
+    td_delete.addEventListener("click",function(){
+        can_get_my_food = false;
         delete_my_food(this.id);
     });
     td_delete.appendChild(delete_icon);
@@ -240,26 +231,28 @@ function create_my_tr_load(food){
 
 
 
-async function add_food(payload,jwt){ 
+async function add_food(payload){
     try{
-        let response = await fetch('/api/my-food',{
-                                     method: 'post',
+        let response = await fetch('/food/my-food/',{
+                                     method: 'POST',
                                      body : payload,
-                                     headers: {"Authorization" : `Bearer ${jwt}`,'Content-Type': 'application/json'}
+                                     headers: {
+                                        'X-CSRFToken': getCsrfToken(),
+                                        'Content-Type': 'application/json'}
                                     });
-        let result = await response.json();                            
-        if(response.status === 201){ 
+        let result = await response.json();
+        if(response.status === 201){
             //call get_my_food,set my_food_page = 0,clear out tbody
             let tbody = document.querySelector(".my-food-body");
             while(tbody.firstChild){
-                tbody.firstChild.remove(); 
+                tbody.firstChild.remove();
             };
             //add loading effect
             let table = document.querySelector(".my-food-table");
             let svg = generate_loading();
             table.appendChild(svg);
             my_food_page = 0;
-            get_my_food(my_food_page,"foredit");
+            get_my_food(my_food_page, "foredit");
             //clear out add food box and reminder
             let food_name = document.getElementById("new-food-name");
             let protein = document.getElementById("new-food-protein");
@@ -274,8 +267,6 @@ async function add_food(payload,jwt){
                 tip.remove()
             };
         }else if (response.status === 403){
-            console.log('JWT已失效,請重新登入');
-            localStorage.removeItem("JWT");
             window.location.href = '/';
         }else if (response.status === 400){
             console.log(result);
@@ -285,12 +276,11 @@ async function add_food(payload,jwt){
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    };  
-};    
+    };
+};
 
 
-
-//verify add new food data 
+//verify add new food data
 function validate_new_food(){
     let food_name = document.getElementById("new-food-name");
     let protein = document.getElementById("new-food-protein");
@@ -365,12 +355,12 @@ function render_my_food_window(background){
     table.appendChild(thead);
     let tbody = document.createElement("tbody");
     tbody.classList.add("my-food-body");
-    get_my_food(my_food_page,"foredit") 
+    get_my_food(my_food_page, "foredit")
     show_my_food.addEventListener("scroll",function(){ //my-food table register scroll loading event 
-        if(this.scrollHeight-this.scrollTop <= this.clientHeight){
+        if(this.scrollHeight-this.scrollTop <= this.clientHeight+5){
             if(can_get_my_food && my_food_page){
                 can_get_my_food = false;
-                get_my_food(my_food_page,"foredit");
+                get_my_food(my_food_page, "foredit");
             }
         };
     });
@@ -476,19 +466,18 @@ function render_my_food_window(background){
         let validate = validate_new_food();
         if(validate){
             can_get_my_food = false; //set to false when click
-            let jwt = localStorage.getItem("JWT");
             let json_data = organize_new_food();
-            add_food(json_data,jwt);
-        };        
+            add_food(json_data);
+        };
     });
     let close_btn = document.createElement("span");
     close_btn.classList.add("close-add");
     close_btn.innerHTML = "Close";
-    close_btn.addEventListener("click",function(){ 
+    close_btn.addEventListener("click",function(){
         document.body.classList.toggle("stop-scrolling");
         let bg = document.getElementsByClassName('bg');
         document.body.removeChild(bg[0]);
-        my_food_page = 0; 
+        my_food_page = 0;
         can_get_my_food = true;
     });
     btn_div.appendChild(close_btn);
@@ -532,9 +521,9 @@ function render_my_food_window_load(background){
     table.appendChild(thead);
     let tbody = document.createElement("tbody");
     tbody.classList.add("my-food-body");
-    get_my_food(my_food_page_load,"forload"); 
-    show_my_food.addEventListener("scroll",function(){ 
-        if(this.scrollHeight-this.scrollTop <= this.clientHeight){
+    get_my_food(my_food_page_load,"forload");
+    show_my_food.addEventListener("scroll",function(){
+        if(this.scrollHeight-this.scrollTop <= this.clientHeight+5){
             if(can_get_my_food && my_food_page_load){
                 can_get_my_food = false;
                 get_my_food(my_food_page_load,"forload");
@@ -576,7 +565,7 @@ function render_my_food_window_load(background){
     input_food_amount.addEventListener("input",function(){ //if no choose food then can't fill in amount
         if(!select_food["food_name"]){
             this.value="";
-            show_tip('Please select food first','.load-title_amount');            
+            show_tip('Please select food first','.load-title_amount');
         }else if(Number(this.value)){ //if number then calculate pfc
             const tip = document.querySelector('.tip');
             if(tip){ //take off tip if existed
@@ -621,7 +610,7 @@ function render_my_food_window_load(background){
     span2_2.innerHTML="g";
     load_food_protein.appendChild(span2);
     load_food_protein.appendChild(span2_1);
-    load_food_protein.appendChild(span2_2);    
+    load_food_protein.appendChild(span2_2);
     //fat amount
     let load_food_fat = document.createElement("div");
     load_food_fat.classList.add("load-food-fat");
@@ -669,31 +658,30 @@ function render_my_food_window_load(background){
     span5_2.innerHTML="kcal";
     load_food_calo.appendChild(span5);
     load_food_calo.appendChild(span5_1);
-    load_food_calo.appendChild(span5_2);   
+    load_food_calo.appendChild(span5_2);
     //button
     let btn_div = document.createElement("div");
     btn_div.classList.add("load-food-btn");
     let submit_btn = document.createElement("span");
     submit_btn.classList.add("submit-load-food");
     submit_btn.innerHTML = "Add";
-    submit_btn.addEventListener("click",function(){ 
+    submit_btn.addEventListener("click",function(){
         let amount = document.getElementById("load-my-food-amount");
-        if(select_food["food_name"]===null){ 
+        if(select_food["food_name"]===null){
             show_tip('Please select food first','.load-title_amount');
-        }else if(!amount.value){ 
+        }else if(!amount.value){
             show_tip('Enter consuming amount','.load-title_amount');
-        }else if(!Number(amount.value)){ 
+        }else if(!Number(amount.value)){
             show_tip('Enter valid amount','.load-title_amount');
         }else if(Number(amount.value)<=0){ //if amount <=0
             show_tip('Amount needs to be > 0','.load-title_amount');
-        }else{ 
+        }else{
             let consume_calo = Number(document.querySelector(".load-food-calo-amt").textContent);
             let consume_protein = Number(document.querySelector(".load-food-protein-amt").textContent);
             let consume_fat = Number(document.querySelector(".load-food-fat-amt").textContent);
             let consume_carbs = Number(document.querySelector(".load-food-carbs-amt").textContent);
             select_food["calories"] = consume_calo;
             let payload = {
-                "create_at" : on_date_utc,
                 "record_id" : record_id,
                 "food_name" : select_food["food_name"],
                 "protein" : consume_protein,
@@ -702,8 +690,8 @@ function render_my_food_window_load(background){
                 "amount" : Number(Number(amount.value).toFixed(1))
             };
             let selected = document.querySelector(".selected");
-            selected.classList.toggle("selected");            
-            let promise = add_intake(JSON.stringify(payload),"load");
+            selected.classList.toggle("selected");
+            let promise = add_intake(JSON.stringify(payload), "load");
             promise.then((result)=>{
                 let amount = document.getElementById("load-my-food-amount");
                 amount.value="";
@@ -724,18 +712,18 @@ function render_my_food_window_load(background){
         document.body.classList.toggle("stop-scrolling");
         let bg = document.getElementsByClassName('bg');
         document.body.removeChild(bg[0]);
-        my_food_page_load = 0; 
+        my_food_page_load = 0;
         can_get_my_food = true;
         //select_food set back to null
         select_food={"food_name":null,
-                 "food_id":null, 
+                 "food_id":null,
                  "protein":null,
                  "carbs":null,
-                 "fat":null, 
+                 "fat":null,
                  "calories":null}
     });
     btn_div.appendChild(close_btn);
-    btn_div.appendChild(submit_btn);    
+    btn_div.appendChild(submit_btn);
     load_food_form.appendChild(title_div);
     load_food_form.appendChild(load_food_amount);
     load_food_form.appendChild(load_food_protein);
@@ -746,13 +734,11 @@ function render_my_food_window_load(background){
     load_amount_div.appendChild(load_food_form);
     my_food_box.appendChild(load_amount_div);
     background.appendChild(my_food_box);
-    return background;      
+    return background;
 };
 
 
-
 /* My Food */
-
 function render_my_food(navmenu){
     let personal_food = document.createElement("div");
     personal_food.classList.add("nav-page");

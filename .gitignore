@@ -175,3 +175,5 @@ staticfiles/
 #db
 db_data/
 
+# install pgroonga
+apache-arrow*

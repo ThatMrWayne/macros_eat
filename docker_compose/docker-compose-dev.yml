@@ -2,7 +2,10 @@
 
 services:
   pg:
-    image: postgres:16
+    image: postgres16-custom
+    build:
+      context: ..
+      dockerfile: ./docker/postgres/Dockerfile.dev
     container_name: pg
     volumes:
       - ../docker/db-init-scripts:/docker-entrypoint-initdb.d:cached
