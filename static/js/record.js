@@ -15,15 +15,14 @@ let can_get_public_food_scroll = true;
 
 
 //delete intake record
-async function delete_intake(intake_id_token,datetime,record_id_){
-    let jwt = localStorage.getItem("JWT");
+async function delete_intake(intake_id_token){
     let intake_id = intake_id_token.split('-')[1];
     try{
-        let response = await fetch(`/api/intakes?intake_id=${intake_id}&datetime=${datetime}&record_id=${record_id_}`,{
+        let response = await fetch(`/records/record-intake/${intake_id}/`,{
                                                     method: 'delete',
-                                                    headers: {"Authorization" : `Bearer ${jwt}`}
-                                                });                                                                     
-        if(response.status===204){  //204 
+                                                    headers: {'X-CSRFToken': getCsrfToken()}
+                                                });
+        if(response.status===204){
             //update currrent status
             let tr = document.getElementById(intake_id_token).parentElement;
             let current_calories = document.querySelector(".current-calo");
@@ -41,8 +40,8 @@ async function delete_intake(intake_id_token,datetime,record_id_){
             current_calories.innerHTML = String(new_calories);
             current_protein.innerHTML = String(new_protein)+"g";
             current_carbs.innerHTML = String(new_carbs)+"g";
-            current_fat.innerHTML = String(new_fat)+"g"; 
-            tr.remove(); //remove from the screen 
+            current_fat.innerHTML = String(new_fat)+"g";
+            tr.remove(); //remove from the screen
             let canvas = Chart.getChart("pfc"); //update pie chart
             if(canvas){
                 canvas.destroy();
@@ -55,15 +54,11 @@ async function delete_intake(intake_id_token,datetime,record_id_){
             group.amount[1] = percentage_c;
             group.amount[2] = percentage_f;
             let PieChart = new Chart(pie,{type:'pie',data:DataEC, options: {plugins:optionsEC}});
-        }else if(response.status === 400){ 
-            let result = await response.json();  
-            console.log(result);
+        }else if(response.status === 400){
             console.log("刪除失敗");
         }else if(response.status === 403){ //
-            console.log("JWT失效,拒絕存取");
-            localStorage.removeItem("JWT");
             window.location.replace("/"); //redirect back to '/'
-        }else if(response.status === 500){ 
+        }else if(response.status === 500){
                 console.log("伺服器錯誤");
         };
     }catch(message){
@@ -74,25 +69,26 @@ async function delete_intake(intake_id_token,datetime,record_id_){
 
 
 //add intake record
-async function add_intake(payload,method){
-    let jwt = localStorage.getItem("JWT");
+async function add_intake(payload, method){
     try{
-        let response = await fetch("/api/intakes",{
-                                                    method: 'post',
+        let response = await fetch("/records/record-intake/",{
+                                                    method: 'POST',
                                                     body : payload,
-                                                    headers: {"Authorization" : `Bearer ${jwt}`,'Content-Type': 'application/json'}
+                                                    headers: {
+                                                        'X-CSRFToken': getCsrfToken(),
+                                                        'Content-Type': 'application/json'}
                                                 });
-        let result = await response.json();                                
-        if(response.status===201){ 
+        let result = await response.json();
+        if(response.status===201){
             let payload_obj = JSON.parse(payload);
-            //added successfully , showing on intake record 
-            added_intake_id = result["intake_id"];
+            //added successfully , showing on intake record
+            let added_intake_id = result["intake_id"];
             payload_obj["intake_id"] = added_intake_id;
             let tr = create_tr(payload_obj);
             let tbody = document.querySelector(".food-body");
             let first_tr = tbody.firstChild;
             if(first_tr){
-                first_tr.before(tr); //put to the first one 
+                first_tr.before(tr); //put to the first one
             }else{
                 tbody.appendChild(tr);
             };
@@ -113,12 +109,12 @@ async function add_intake(payload,method){
             current_protein.innerHTML = String(new_protein)+"g";
             current_carbs.innerHTML = String(new_carbs)+"g";
             current_fat.innerHTML = String(new_fat)+"g";
-            //set "select_food" back to null 
+            //set "select_food" back to null
             select_food={"food_name":null,
-                 "food_id":null, 
+                 "food_id":null,
                  "protein":null,
                  "carbs":null,
-                 "fat":null, 
+                 "fat":null,
                  "calories":null}
             //update pie chart
             let canvas = Chart.getChart("pfc");
@@ -175,7 +171,7 @@ function create_tr(food){
     let delete_icon = document.createElement("i");
     delete_icon.setAttribute("data-feather","trash");
     td_delete.addEventListener("click",function(){ //register delete intake record
-        delete_intake(this.id,on_date_utc,record_id);
+        delete_intake(this.id);
     });
     td_delete.appendChild(delete_icon);
     tr.appendChild(th);
@@ -397,8 +393,8 @@ function pop_search_food(background){
                 "fat" : consume_fat,
                 "carbs" : consume_carbs,
                 "amount" : Number(Number(input_amount.value).toFixed(1))
-            }            
-            let promise = add_intake(JSON.stringify(payload),"search");
+            }
+            let promise = add_intake(JSON.stringify(payload), "search");
             promise.then((result)=>{
                 //clear out
                 let input_amount = document.getElementById("food_portion")
@@ -673,15 +669,14 @@ function pop_input_directly(background){
             let input_food_fat = document.getElementsByName("input-food-fat")[0].value;
             let input_food_carbs = document.getElementsByName("input-food-carbs")[0].value;
             let payload = {
-                "create_at" : on_date_utc,
                 "record_id" : record_id,
                 "food_name" : food_name,
                 "protein" : Number(Number(input_food_protein).toFixed(1)),
                 "fat" : Number(Number(input_food_fat).toFixed(1)),
                 "carbs" : Number(Number(input_food_carbs).toFixed(1)),
                 "amount" : Number(Number(input_food_amount).toFixed(1))
-            };           
-            let promise = add_intake(JSON.stringify(payload),"directly");
+            };
+            let promise = add_intake(JSON.stringify(payload), "directly");
             promise.then((result)=>{
                 let calories = Number(document.getElementById("caculate-food-calo").textContent);
                 let current_calories = document.querySelector(".current-calo");
@@ -799,7 +794,7 @@ function show_consume(main_container, food_record){
         input_directly.classList.add("input-directly");
         let input_directly_span = document.createElement("span");
         input_directly_span.appendChild(document.createTextNode("Input directly"));
-        input_directly.appendChild(input_directly_span); 
+        input_directly.appendChild(input_directly_span);
         input_directly.addEventListener("click",function(){ //click to show "input directly" box
             let bg = pop_input_directly(createBack());
             document.body.appendChild(bg);
@@ -846,14 +841,14 @@ function show_consume(main_container, food_record){
             feather.replace();
         };
     };
-};    
+};
 
 
 function show_date(main_container,date_format){
-    if(document.querySelector(".calender-container")){ //if this div already existed, no nedd to produce
+    if(document.querySelector(".calender-container")){ //if this div already existed, no need to produce
         //only change date
         let show_date_div = document.querySelector(".show-date");
-        show_date_div.innerHTML = date_format; 
+        show_date_div.innerHTML = date_format;
     }else{
         let calender_container_div = document.createElement("div");
         calender_container_div.classList.add("calender-container");
@@ -866,11 +861,11 @@ function show_date(main_container,date_format){
         date_input.classList.add("datepicker-input");
         date_input.setAttribute("type","date");
         date_input.addEventListener("change",function(){ //register click on date event 
-            if(this.value !== on_which_date){ 
-                let choose_date = this.valueAsDate; //date be selected 
-                let year = choose_date.getFullYear(); 
-                let month = choose_date.getMonth()  
-                let date = choose_date.getDate();   
+            if(this.value !== on_which_date){
+                let choose_date = this.valueAsDate; //date be selected
+                let year = choose_date.getFullYear();
+                let month = choose_date.getMonth();
+                let date = choose_date.getDate();
                 let show_date_format = Month[month+1] + " "+String(date) + ", " + String(year); //date be showed on screen
                 let new_date = new Date(year,month,date);
                 let utc = new_date.getTime();
@@ -901,20 +896,22 @@ function show_date(main_container,date_format){
         daily_title_div.appendChild(document.createTextNode("Daily Record"));
         calender_container_div.appendChild(daily_title_div);
         main_container.appendChild(calender_container_div);
-    };    
+    };
 };
 
 
 //edit record
-async function update_target(payload,jwt){
+async function update_target(payload){
     try{
-        let response = await fetch('/api/records',{
+        let response = await fetch(`/records/daily-record/${record_id}/`,{
                                      method: 'PATCH',
                                      body : payload,
-                                     headers: {"Authorization" : `Bearer ${jwt}`,'Content-Type': 'application/json'}
+                                     headers: {
+                                        'X-CSRFToken': getCsrfToken(),
+                                        'Content-Type': 'application/json'}
                                     });
-        let result = await response.json();                            
-        if(response.ok){ 
+        let result = await response.json();
+        if(response.ok){
             let payload_obj = JSON.parse(payload);
             new_target_calories = payload_obj["plan_calories"];
             new_target_protein =  payload_obj["protein"];
@@ -945,8 +942,6 @@ async function update_target(payload,jwt){
             let percent_fat = document.querySelector(".percent-fat");
             percent_fat.innerHTML =  "("+String(new_target_fat)+"%"+")";
         }else if (response.status === 403){
-            console.log('JWT已失效,請重新登入');
-            localStorage.removeItem("JWT");
             window.location.href = '/';
         }else if (response.status === 400){
             console.log(result);
@@ -956,8 +951,8 @@ async function update_target(payload,jwt){
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    } ;   
-};    
+    } ;
+};
 
 
 //verufy update target data
@@ -1015,8 +1010,6 @@ function organize_target_update(){
             data["carbs"]=n;
         };
     };
-    data["record_id"] = record_id;
-    data["create_at"] = on_date_utc;
     return JSON.stringify(data);
 }
 
@@ -1130,15 +1123,14 @@ function pop_edit_window(background){
         //check data before submit
         let validate = validate_target_update();
         if(validate){
-            let jwt = localStorage.getItem("JWT");
             let json_data = organize_target_update();
-            update_target(json_data,jwt);
-        };        
+            update_target(json_data);
+        };
     });
     let close_btn = document.createElement("span");
     close_btn.classList.add("close-update");
     close_btn.innerHTML = "Close";
-    close_btn.addEventListener("click",function(){ 
+    close_btn.addEventListener("click",function(){
         document.body.classList.toggle("stop-scrolling");
         let bg = document.getElementsByClassName('bg');
         document.body.removeChild(bg[0]);
@@ -1476,12 +1468,12 @@ function pop_load_diet_plan(background){
     let diet_plan = document.createElement("div");
     diet_plan.classList.add("diet-plan");//
     diet_plan.addEventListener("scroll",function(){ //plan table註冊滑動載入my-plan事件
-        if(this.scrollHeight-this.scrollTop <= this.clientHeight){
+        if(this.scrollHeight-this.scrollTop <= this.clientHeight+5){
             if(can_get_my_plan && my_plan_page){
                 can_get_my_plan = false;
                 get_diet_plan(my_plan_page, "forload");
             };
-        };
+        }
     });
     let table = document.createElement("table");
     table.classList.add("plan-table");
@@ -1536,7 +1528,6 @@ function pop_load_diet_plan(background){
             reminder_span.classList.add("reminder-select");
             span_cancel.before(reminder_span);
         }else{ //有選才送出
-            let jwt = localStorage.getItem("JWT");
             let payload={};
             let selected = document.getElementById(select_diet_plan_id);
             let selected_children = selected.children;
@@ -1545,10 +1536,9 @@ function pop_load_diet_plan(background){
                 payload[info[i]] = Number(selected_children[i+1].textContent);
             };
             //這邊不行重新又再產生日期,要直接去抓全域變數的日期
-            payload["create_at"]=on_date_utc;
+            payload["created_at"]=on_date_utc;
             payload = JSON.stringify(payload);
-            console.log(payload);
-            post_select_plan(payload,jwt,on_date_format);
+            post_select_plan(payload, on_date_format);
             can_get_my_plan = false;
         }
     });
@@ -1723,7 +1713,6 @@ function show_empty(){
 };
 
 
-// /api/records
 async function get_record(timestamp, show_date_format){
     try{
         let response = await fetch('/records/daily-record/?datetime='+String(timestamp),{

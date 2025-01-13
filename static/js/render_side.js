@@ -779,12 +779,11 @@ function render_my_food(navmenu){
 
 
 async function delete_plan(plan_id_token){
-    let jwt = localStorage.getItem("JWT");
     try{
         let plan_id = plan_id_token.split('-')[1];
-        let response = await fetch('/api/plans?plan_id='+plan_id,{
-                                                    method: 'delete',
-                                                    headers: {"Authorization" : `Bearer ${jwt}`}
+        let response = await fetch(`/plans/diet-plan/${plan_id}/`,{
+                                                    method: 'DELETE',
+                                                    headers: {'X-CSRFToken': getCsrfToken()}
                                                 });
         if(response.status===204){
             //re get_diet_plan
@@ -809,12 +808,14 @@ async function delete_plan(plan_id_token){
 
 
 
-async function add_diet_plan(payload,jwt){
+async function add_diet_plan(payload){
     try{
-        let response = await fetch('/api/plans',{
-                                     method: 'post',
+        let response = await fetch('/plans/diet-plan/',{
+                                     method: 'POST',
                                      body : payload,
-                                     headers: {"Authorization" : `Bearer ${jwt}`,'Content-Type': 'application/json'}
+                                     headers: {
+                                        'X-CSRFToken': getCsrfToken(),
+                                        'Content-Type': 'application/json'}
                                     });
         let result = await response.json();
         if(response.status === 201){
@@ -822,7 +823,7 @@ async function add_diet_plan(payload,jwt){
             let tbody = document.querySelector(".plan-body");
             while(tbody.firstChild){
                 tbody.firstChild.remove();
-            };    
+            };
             my_plan_page = 0;
             get_diet_plan(my_plan_page, "foredit");
             let protein = document.getElementsByName("new-plan_protein")[0];
@@ -838,8 +839,6 @@ async function add_diet_plan(payload,jwt){
                 tip.remove()
             };
         }else if (response.status === 403){
-            console.log('JWT已失效,請重新登入');
-            localStorage.removeItem("JWT");
             window.location.href = '/';
         }else if (response.status === 400){
             console.log(result);
@@ -849,11 +848,11 @@ async function add_diet_plan(payload,jwt){
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    };  
-}; 
+    };
+};
 
 
-//verify add new diet plan data 
+//verify add new diet plan data
 function validate_new_plan(){
     let protein = document.getElementsByName("new-plan_protein")[0];
     let fat = document.getElementsByName("new-plan_fat")[0];
@@ -885,12 +884,11 @@ function validate_new_plan(){
         result = false;
         return result;
     };
-    return result;     
+    return result;
 };
 
 
-
-//organize adding new diet plan data 
+//organize adding new diet plan data
 function organize_new_plan(){
     let protein = document.getElementsByName("new-plan_protein")[0].value;
     let fat = document.getElementsByName("new-plan_fat")[0].value;
@@ -901,13 +899,8 @@ function organize_new_plan(){
     data["protein"] = Number(protein);
     data["fat"] = Number(fat);
     data["carbs"] = Number(carbs);
-    let current_date = new Date();
-    let timestamp = Math.floor(current_date.getTime()/1000);
-    data["create_at"] = timestamp;
     return JSON.stringify(data)
 };
-
-
 
 
 //create tr for editing diet plan
@@ -934,8 +927,8 @@ function create_plan_tr_edit(plan){
     td_delete.setAttribute("id",'del-'+plan["plan_id"]); //put plan_id in garbage can
     let delete_icon = document.createElement("i");
     delete_icon.setAttribute("data-feather","trash");
-    td_delete.addEventListener("click",function(){ 
-        can_get_my_plan = false; 
+    td_delete.addEventListener("click",function(){
+        can_get_my_plan = false;
         delete_plan(this.id);
     });
     td_delete.appendChild(delete_icon);
@@ -967,12 +960,12 @@ function render_my_plan_window(background){
     let diet_plan = document.createElement("div");
     diet_plan.classList.add("diet-plan");//
     diet_plan.addEventListener("scroll",function(){
-        if(this.scrollHeight-this.scrollTop <= this.clientHeight){
+        if(this.scrollHeight-this.scrollTop <= this.clientHeight+5){
             if(can_get_my_plan && my_plan_page){
                 can_get_my_plan = false;
                 get_diet_plan(my_plan_page, "foredit");
             };
-        };
+        }
     });
     let table = document.createElement("table");
     table.classList.add("plan-table");
@@ -1094,9 +1087,8 @@ function render_my_plan_window(background){
         let validate = validate_new_plan();
         if(validate){
             can_get_my_plan = false;
-            let jwt = localStorage.getItem("JWT");
             let json_data = organize_new_plan();
-            add_diet_plan(json_data,jwt);
+            add_diet_plan(json_data);
         };
     });
     span_select.innerHTML="Save change";

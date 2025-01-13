@@ -930,12 +930,13 @@ table.plan-table {
 .plan-item:hover{
     cursor: pointer;
     opacity: 0.6;
-    
-} 
+
+}
 
 .edit-plan-item:hover{
     opacity: 0.6;
 }
+
 
 .select-btn{
     position: absolute;
