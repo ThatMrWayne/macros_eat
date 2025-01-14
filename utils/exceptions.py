@@ -24,6 +24,11 @@ class MissingInputError(BasicApiError):
     STATUS_CODE = status.HTTP_400_BAD_REQUEST
 
 
+class WrongInputError(BasicApiError):
+    ERROR_CODE = "Wrong Input Error"
+    STATUS_CODE = status.HTTP_400_BAD_REQUEST
+
+
 class AlreadyExistError(BasicApiError):
     ERROR_CODE = "Already exist Error"
     STATUS_CODE = status.HTTP_400_BAD_REQUEST

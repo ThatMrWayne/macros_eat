@@ -10,3 +10,11 @@ class Weight(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField()
     weight = models.FloatField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'created_at'],
+                name='unique_weight_user_created_at'
+            )
+        ]

@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from food.serializers import *
+from food.models import *
 
 
 # Create your views here.

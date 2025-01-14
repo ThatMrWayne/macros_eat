@@ -1142,15 +1142,15 @@ function organize_weight_data(name_attr){
     let data;
     if(name_attr==="addweight"){
         data = {
-            "create_at" : today_utc,
+            "created_at" : today_utc,
             "weight" : weight
         };
     }else{
         data = {
-            "create_at" : today_utc,
+            "created_at" : today_utc,
             "new_weight" : weight
         };
-    }    
+    }
     return JSON.stringify(data)
 };
 
@@ -1178,14 +1178,12 @@ async function get_weight(sdate,edate){
         svg.classList.add("weight-spinner");
         weight_record.appendChild(svg);
     };
-    let jwt = localStorage.getItem("JWT");
     try{
-        let response = await fetch(`/api/weight?sdate=${sdate}&edate=${edate}`,{
-                                                method: 'get',
-                                                headers: {"Authorization" : `Bearer ${jwt}`}
+        let response = await fetch(`/weight/my-weight/?sdate=${sdate}&edate=${edate}`,{
+                                                method: 'GET',
                                                 });
-        let result = await response.json();                                
-        if(response.ok){  
+        let result = await response.json();
+        if(response.ok){
             //remove spinner
             let spinner = document.querySelector(".spinner");
             if(spinner){
@@ -1199,7 +1197,7 @@ async function get_weight(sdate,edate){
                 select_date.push(sdate);
             };
             //re-draw
-            if(result["weight_record"]){ 
+            if(result["weight_record"]){
                 let weight = result["weight_record"];
                 let weight_data = {}
                 let temp_weight = [] //for calculate max and min weight
@@ -1212,7 +1210,7 @@ async function get_weight(sdate,edate){
                         final_data.push({
                             x : select_date[i],
                             y : weight_data[select_date[i]],
-                        });      
+                        });
                     }else{
                         final_data.push({
                             x : select_date[i],
@@ -1251,19 +1249,21 @@ async function get_weight(sdate,edate){
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    }; 
-};            
+    };
+};
 
 
-async function add_today_weight(payload,jwt){
+async function add_today_weight(payload){
     try{
-        let response = await fetch('/api/weight',{
-                                     method: 'post',
+        let response = await fetch('/weight/my-weight/',{
+                                     method: 'POST',
                                      body : payload,
-                                     headers: {"Authorization" : `Bearer ${jwt}`,'Content-Type': 'application/json'}
+                                     headers: {
+                                        'X-CSRFToken': getCsrfToken(),
+                                        'Content-Type': 'application/json'}
                                     });
-        let result = await response.json();                            
-        if(response.status === 201){ 
+        let result = await response.json();
+        if(response.status === 201){
             let end_date = new Date();
             let end_utc = date_to_stamp(end_date); // today is end date
             let start_utc = end_utc - (6*86400000);
@@ -1275,8 +1275,6 @@ async function add_today_weight(payload,jwt){
                 tip.remove();
             };
         }else if (response.status === 403){
-            console.log('JWT已失效,請重新登入');
-            localStorage.removeItem("JWT");
             window.location.href = '/';
         }else if (response.status === 400){
             console.log(result);
@@ -1290,19 +1288,21 @@ async function add_today_weight(payload,jwt){
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    };  
-};   
+    };
+};
 
 
-async function update_today_weight(payload,jwt){
+async function update_today_weight(payload){
     try{
-        let response = await fetch('/api/weight',{
+        let response = await fetch('/weight/my-weight/',{
                                      method: 'PATCH',
                                      body : payload,
-                                     headers: {"Authorization" : `Bearer ${jwt}`,'Content-Type': 'application/json'}
-                                    });                       
-        let result = await response.json();                            
-        if(response.ok){ 
+                                     headers: {
+                                        'X-CSRFToken': getCsrfToken(),
+                                        'Content-Type': 'application/json'}
+                                    });
+        let result = await response.json();
+        if(response.ok){
              let end_date = new Date();
              let end_utc = date_to_stamp(end_date);
              let start_utc = end_utc - (6*86400000);
@@ -1328,10 +1328,8 @@ async function update_today_weight(payload,jwt){
     }catch(message){
         console.log(`${message}`)
         throw Error('Fetching was not ok!!.')
-    };   
+    };
 };
-
-
 
 
 function show_weight_section(){
@@ -1410,12 +1408,11 @@ function show_weight_section(){
             let result = validate_weight("addweight","add-weight-title");
             if(result){
                 let data = organize_weight_data("addweight");
-                let jwt = localStorage.getItem("JWT");
-                add_today_weight(data,jwt);
+                add_today_weight(data);
             }else{
                 weight_action = true;
             };
-        };    
+        };
     });
     add_weight_btn.appendChild(span_cancel);
     add_weight_btn.appendChild(span_submit);
