@@ -96,6 +96,11 @@ DATABASES = {
         "PASSWORD": CONFIG["databases"]["PASSWORD"],
         "HOST": CONFIG["databases"]["HOST"],
         "PORT": CONFIG["databases"]["PORT"],
+        "OPTIONS": {
+            "pool": {
+                "min_size": 10,
+            },
+        },
     }
 }
 

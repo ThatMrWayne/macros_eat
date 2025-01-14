@@ -3,7 +3,7 @@ FROM postgres:16
 # Switch to root to install packages
 USER root
 
-# Install packages
+# Install pgroonga packages
 RUN apt-get update
 RUN apt-get install lsb-release
 RUN apt install -y -V ca-certificates lsb-release wget
