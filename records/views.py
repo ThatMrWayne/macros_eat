@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from records.models import *
 from records.serializers import *
-from utils.utils import convert_timestamp_to_utc_datetime
+from utils.utils import convert_timestamp_to_utc_datetime, RedisHash
 
 
 # Create your views here.
@@ -14,12 +14,21 @@ class RecordViewSet(viewsets.GenericViewSet):
 
     def retrieve(self, request, pk=None):
         user = request.user
-        utc_datetime = convert_timestamp_to_utc_datetime(self.request.query_params.get('datetime'))
-        try:
-            instance = Record.objects.get(user=user, created_at=utc_datetime)
-        except Record.DoesNotExist:
-            instance = None
-        data = self.get_serializer(instance).data if instance else {}
+        timestamp = self.request.query_params.get('datetime')
+        utc_datetime = convert_timestamp_to_utc_datetime(timestamp)
+        redis_client = RedisHash()
+        hash_key = f"my-record-{user.id}"
+        field_key = f"{user.id}-{timestamp}"
+        data = redis_client.hget(hash_key, field_key)
+        if data is None:
+            try:
+                instance = Record.objects.get(user=user, created_at=utc_datetime)
+            except Record.DoesNotExist:
+                instance = None
+
+            data = self.get_serializer(instance).data if instance else {}
+            redis_client.hset(hash_key, field_key, data)
+
         payload = Response(data, status=status.HTTP_200_OK)
         return payload
 
@@ -36,7 +45,9 @@ class RecordViewSet(viewsets.GenericViewSet):
         update_data = request.data
         if instance.user_id != request.user.id:
             return Response({"success": False}, status=status.HTTP_403_FORBIDDEN)
-        Record.objects.filter(pk=instance.id).update(**update_data)
+        for key, value in update_data.items():
+            setattr(instance, key, value)
+        instance.save(update_fields=list(update_data.keys()))
 
         return Response({'ok': True}, status=status.HTTP_200_OK)
 

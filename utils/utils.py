@@ -1,5 +1,8 @@
 from datetime import datetime, timezone
 from django.db.models import Q
+from redis.client import Redis
+from django.core.cache import caches
+import json
 
 
 def convert_timestamp_to_utc_datetime(milli_timestamp):
@@ -41,3 +44,28 @@ class CursorPaginator:
             else Q(**{self.order_attr + "__gt": paginated_position})
         )
         return self.queryset.filter(filter_query)
+
+
+class RedisHash:
+    def __init__(self):
+        self.client = self._get_redis_client()
+
+    def _get_redis_client(self, using="default") -> Redis:
+        return caches[using].client.get_client()
+
+    def hset(self, hash_key, field, value, expire_seconds=None):
+        self.client.hset(hash_key, field, json.dumps(value))
+        if expire_seconds is None:
+            self.client.expire(hash_key, 300)
+
+    def hget(self, hash_key, field):
+        value = self.client.hget(hash_key, field)
+        if value:
+            return json.loads(value.decode('utf-8'))
+        return None
+
+    def hdel(self, hash_key, field):
+        self.client.hdel(hash_key, field)
+
+    def delete(self, hash_key):
+        self.client.delete(hash_key)

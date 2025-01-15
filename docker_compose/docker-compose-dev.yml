@@ -16,6 +16,12 @@ services:
     networks:
       - service-network
 
+  redis:
+    image: redis:7.4.2
+    container_name: redis
+    networks:
+      - service-network
+
   django-server:
     image: macroseat-app
     build:
@@ -31,9 +37,9 @@ services:
       - ..:/app:delegated # this is for reload code inside container while changing code in local
     networks:
       - service-network
-      #- omnisegment_default
     links:
       - pg
+      - redis
     depends_on:
       - pg
 

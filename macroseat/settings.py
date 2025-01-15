@@ -105,6 +105,17 @@ DATABASES = {
 }
 
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": CONFIG["cache"]["CACHE_LOCATION"],
+        "OPTIONS": {
+            "CLIENT_CLASS": CONFIG["cache"]["DEFAULT_CLIENT_CLASS"],
+        }
+    }
+}
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
