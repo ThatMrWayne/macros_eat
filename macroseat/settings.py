@@ -98,7 +98,8 @@ DATABASES = {
         "PORT": CONFIG["databases"]["PORT"],
         "OPTIONS": {
             "pool": {
-                "min_size": 10,
+                "min_size": 3,
+                "max_size": 10
             },
         },
     }
@@ -171,4 +172,40 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    'formatters': {
+        'error_specific': {
+            'format': '''
+Time: {asctime}
+Level: {levelname}
+Logger: {name}
+Message: {message}
+Exception: {exc_info}
+            ''',
+            'style': '{',
+        },
+    },
+    "handlers": { # second layer
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+        },
+        "errmsg_logfile": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": "django_errmsg.log",
+            "formatter": "error_specific"
+        },
+    },
+    "loggers": { # first layer
+        "django": {
+            "handlers": ["console", "errmsg_logfile"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
 }
