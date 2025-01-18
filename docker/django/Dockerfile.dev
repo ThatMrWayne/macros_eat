@@ -8,6 +8,8 @@ ENV PYTHONUNBUFFERED=1
 # Set work directory
 WORKDIR /app
 
+# log dir will store log from gunicorn and django
+RUN mkdir -p /app/log
 # Install dependencies
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt

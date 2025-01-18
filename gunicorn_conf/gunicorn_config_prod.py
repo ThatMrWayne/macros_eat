@@ -3,9 +3,10 @@ workers = 2  # Number of worker processes
 threads = 8
 worker_class = "gthread"
 timeout = 120  # Worker timeout in seconds
+graceful_timeout = 30
 max_requests = 8192
-reload = True # for dev
+reload = False
 
-errorlog = '/gunicorn-error.log'
-accesslog = '/gunicorn-access.log'
-loglevel = 'info'
+errorlog = '/app/gunicorn_log/gunicorn-error.log'
+accesslog = '/app/gunicorn_log/gunicorn-access.log'
+loglevel = 'warning'

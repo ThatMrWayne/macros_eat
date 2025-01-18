@@ -36,4 +36,5 @@ class RecordPageView(TemplateView):
 
         response = super().dispatch(request, *args, **kwargs)
         response.delete_cookie('remind')
+
         return response

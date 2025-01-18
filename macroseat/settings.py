@@ -33,7 +33,6 @@ DEBUG = CONFIG.getboolean("general", "DEBUG")
 
 ALLOWED_HOSTS = json.loads(CONFIG["general"]["ALLOWED_HOSTS"])
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -197,14 +196,24 @@ Exception: {exc_info}
         "errmsg_logfile": {
             "level": "ERROR",
             "class": "logging.FileHandler",
-            "filename": "django_errmsg.log",
+            "filename": "log/django_errmsg.log",
             "formatter": "error_specific"
         },
+        'file': {
+            'level': "INFO",
+            'class': 'logging.FileHandler',
+            'filename': 'wsgi_requests_nginx.log',
+        }
     },
     "loggers": { # first layer
         "django": {
             "handlers": ["console", "errmsg_logfile"],
-            "level": "INFO",
+            "level": 'INFO',
+            "propagate": True,
+        },
+        "gunicorn_logger": {
+            "handlers": ["file"],
+            "level": 'INFO',
             "propagate": True,
         },
     },

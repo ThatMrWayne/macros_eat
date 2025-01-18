@@ -11,7 +11,7 @@ async function submit_information(payload){
         let result = await response.json();
         if(response.ok){
             //get new cookie at this moment (remind=yes)
-            window.location.replace('/record')
+            window.location.replace('/record/')
         }else if (response.status === 403){
             console.log('cookie已失效,請重新登入');
             window.location.href = '/';

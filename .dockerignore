@@ -102,3 +102,6 @@ README.md
 
 #debug
 debug*
+
+#nginx
+nginx_conf/
