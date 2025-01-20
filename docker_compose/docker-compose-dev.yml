@@ -8,7 +8,7 @@ services:
       dockerfile: ./docker/pg/Dockerfile
     container_name: pg
     volumes:
-      - ../db_data:/var/lib/postgresql/data:cached
+      - ../db_data_dev:/var/lib/postgresql/data:cached
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
     networks:
