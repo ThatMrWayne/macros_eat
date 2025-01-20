@@ -13,6 +13,5 @@ def get_config(CONFIG_DIR):
     if ENV == "dev":
         CONFIG.read(f"{CONFIG_DIR}/development.cfg")
     elif ENV == "prod":
-        # maybe read from AWS secret manager
-        pass
+        CONFIG.read(f"{CONFIG_DIR}/production.cfg")
     return CONFIG

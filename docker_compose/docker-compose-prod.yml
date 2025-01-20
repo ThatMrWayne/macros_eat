@@ -5,11 +5,10 @@ services:
     image: postgres:16
     container_name: pg
     volumes:
-      - ../docker/db-init-scripts:/docker-entrypoint-initdb.d:cached
-      - ../docker/scripts/create_db.sql:/create_db.sql
       - ../db_data:/var/lib/postgresql/data:cached
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGPORT=${POSTGRES_PORT}
     networks:
       - service-network
 
@@ -23,15 +22,14 @@ services:
     image: macroseat-app
     build:
       context: .. # relative position to docker-compose.yml file location
-      dockerfile: ./docker/django/Dockerfile.dev
+      dockerfile: ./docker/django/Dockerfile.prod
     container_name: django-server
     command: sh /app/docker/scripts/run_django_prod.sh
     working_dir: /app
+    environment:
+      - ENV=prod
     volumes:
-      # the first location is also relatvie to docker-compose file
-      # log record
-      - ../log/gunicorn:/app/gunicorn_log
-       - ../log/django_errmsg.log:/app/django_errmsg.log
+      - ../log:/app/log
     networks:
       - service-network
     links:

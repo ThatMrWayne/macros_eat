@@ -7,6 +7,6 @@ graceful_timeout = 30
 max_requests = 8192
 reload = False
 
-errorlog = '/app/gunicorn_log/gunicorn-error.log'
-accesslog = '/app/gunicorn_log/gunicorn-access.log'
+errorlog = '/app/log/gunicorn-error.log'
+accesslog = '/app/log/gunicorn-access.log'
 loglevel = 'warning'

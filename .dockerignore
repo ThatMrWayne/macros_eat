@@ -95,7 +95,6 @@ staticfiles/
 # db
 db.sqlite3
 db_data/
-docker/db-init-scripts/
 
 # github
 README.md
