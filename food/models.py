@@ -1,6 +1,5 @@
 from django.db import models, connection
 from django.contrib.auth import get_user_model
-import psycopg
 
 User = get_user_model()
 
