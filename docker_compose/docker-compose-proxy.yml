@@ -6,9 +6,9 @@ services:
       - 443:443
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ../certs:/etc/nginx/certs
-      - ../vhost:/etc/nginx/vhost.d
-      - ../html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
     restart: always
 
   acme-companion:
@@ -17,7 +17,7 @@ services:
       - nginx-proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ../acme:/etc/acme.sh
+      - acme:/etc/acme.sh
     environment:
       - DEFAULT_EMAIL=whph60308@gmail.com
     restart: always
