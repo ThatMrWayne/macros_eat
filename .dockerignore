@@ -110,3 +110,7 @@ debug*
 nginx_conf/
 
 production.example.cfg
+
+certs/
+vhost/
+acme/

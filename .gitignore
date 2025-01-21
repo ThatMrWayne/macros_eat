@@ -180,3 +180,8 @@ apache-arrow*
 
 *.log
 log/
+
+
+certs/
+vhost/
+acme/
