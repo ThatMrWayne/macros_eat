@@ -24,7 +24,7 @@ services:
   django-server:
     image: ${ECR_REGISTRY}/macroseat-django:latest
     build:
-      context: .. # relative position to docker-compose.yml file location
+      context: ..
       dockerfile: ./docker/django/Dockerfile.prod
     container_name: django-server
     command: sh /app/docker/scripts/run_django_prod.sh
