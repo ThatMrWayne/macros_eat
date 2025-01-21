@@ -5,7 +5,7 @@ services:
     image: postgres-custom
     build:
       context: .. # relative position to docker-compose.yml file location
-      dockerfile: ./docker/pg/Dockerfile
+      dockerfile: ./docker/pg/Dockerfile.dev
     container_name: pg
     volumes:
       - ../db_data_dev:/var/lib/postgresql/data:cached

@@ -1,0 +1,73 @@
+name: Deploy to production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  continuous-integration:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+
+    - name: Create production config for Django
+      run: |
+        cat > macroseat/production.cfg << EOF
+        [general]
+        DEBUG: False
+        SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+        ALLOWED_HOSTS: [".macroseat.online"]
+        TIMEZONE: Asia/Taipei
+        CORS_ALLOWED_ORIGINS: ["https://*.macroseat.online"]
+        CSRF_TRUSTED_ORIGINS: ["https://*.macroseat.online"]
+        [databases]
+        NAME: ${{ secrets.DB_NAME }}
+        ENGINE: django.db.backends.postgresql
+        USER: ${{ secrets.DB_USER }}
+        HOST: ${{ secrets.DB_HOST }}
+        PASSWORD: ${{ secrets.DB_PASSWORD }}
+        PORT: ${{ secrets.DB_PORT }}
+        [cache]
+        CACHE_LOCATION: ${{ secrets.CACHE_LOCATION }}
+        DEFAULT_CLIENT_CLASS: django_redis.client.default.DefaultClient
+        EOF
+
+
+    - name: Create production config for Nginx
+      run: |
+        echo "${{ secrets.NGINX_PROD_CONF }}" > nginx_prod.conf
+
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        PGPORT: ${{ secrets.DB_PORT }}
+      run: |
+        docker compose -f ./docker_compose/docker-compose-prod.yml build
+
+        docker tag macroseat-app $ECR_REGISTRY/macroseat-django:latest
+        docker tag postgres-custom $ECR_REGISTRY/macroseat-postgres:latest
+        docker tag nginx-custom $ECR_REGISTRY/macroseat-nginx:latest
+
+        docker push $ECR_REGISTRY/macroseat-django:latest
+        docker push $ECR_REGISTRY/macroseat-postgres:latest
+        docker push $ECR_REGISTRY/macroseat-nginx:latest

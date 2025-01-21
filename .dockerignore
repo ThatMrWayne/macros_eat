@@ -2,6 +2,7 @@
 .git
 .gitignore
 .gitattributes
+.github/
 
 
 # CI
@@ -14,6 +15,8 @@ docker-compose.yml
 .docker
 .dockerignore
 docker/django/
+docker/pg/
+docker/nginx/
 docker_compose/
 
 # Byte-compiled / optimized / DLL files
@@ -104,3 +107,5 @@ debug*
 
 #nginx
 nginx_conf/
+
+production.example.cfg

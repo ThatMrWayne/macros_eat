@@ -2,16 +2,13 @@
 
 services:
   pg:
-    image: postgres:16
+    image: postgres-custom
     build:
       context: .. # relative position to docker-compose.yml file location
-      dockerfile: ./docker/pg/Dockerfile
+      dockerfile: ./docker/pg/Dockerfile.prod
     container_name: pg
     volumes:
       - ../db_data:/var/lib/postgresql/data:cached
-    environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - PGPORT=${POSTGRES_PORT}
     networks:
       - service-network
 
@@ -44,9 +41,11 @@ services:
       - 8000
 
   nginx:
-    image: nginx:alpine
+    image: nginx-custom
+    build:
+      context: .. # relative position to docker-compose.yml file location
+      dockerfile: ./docker/nginx/Dockerfile.prod
     volumes:
-      - ../nginx_conf/nginx_prod.conf:/etc/nginx/conf.d/default.conf:ro
       - ../log/nginx:/var/log/nginx
     ports:
       - 80:80
