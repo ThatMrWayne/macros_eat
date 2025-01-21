@@ -179,3 +179,4 @@ db_data/
 apache-arrow*
 
 *.log
+log/

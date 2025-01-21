@@ -2,7 +2,7 @@
 
 services:
   pg:
-    image: postgres-custom
+    image: ${ECR_REGISTRY}/macroseat-postgres:latest
     build:
       context: .. # relative position to docker-compose.yml file location
       dockerfile: ./docker/pg/Dockerfile.prod
@@ -19,7 +19,7 @@ services:
       - service-network
 
   django-server:
-    image: macroseat-app
+    image: ${ECR_REGISTRY}/macroseat-django:latest
     build:
       context: .. # relative position to docker-compose.yml file location
       dockerfile: ./docker/django/Dockerfile.prod
@@ -41,7 +41,7 @@ services:
       - 8000
 
   nginx:
-    image: nginx-custom
+    image: ${ECR_REGISTRY}/macroseat-nginx:latest
     build:
       context: .. # relative position to docker-compose.yml file location
       dockerfile: ./docker/nginx/Dockerfile.prod

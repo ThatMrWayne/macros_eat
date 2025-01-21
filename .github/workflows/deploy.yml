@@ -65,10 +65,6 @@ jobs:
       run: |
         docker compose -f ./docker_compose/docker-compose-prod.yml build
 
-        docker tag macroseat-app $ECR_REGISTRY/macroseat-django:latest
-        docker tag postgres-custom $ECR_REGISTRY/macroseat-postgres:latest
-        docker tag nginx-custom $ECR_REGISTRY/macroseat-nginx:latest
-
         docker push $ECR_REGISTRY/macroseat-django:latest
         docker push $ECR_REGISTRY/macroseat-postgres:latest
         docker push $ECR_REGISTRY/macroseat-nginx:latest
