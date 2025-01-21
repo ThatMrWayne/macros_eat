@@ -8,9 +8,9 @@ COPY docker/scripts/create_db.sql create_db.sql
 ARG POSTGRES_PASSWORD
 ARG PGPORT
 
-
-RUN echo "Password during build: ${POSTGRES_PASSWORD}"
-RUN echo "Port during build: ${PGPORT}"
+RUN echo "START!!!"
+RUN echo $POSTGRES_PASSWORD
+RUN echo $PGPORT
 
 
 ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD

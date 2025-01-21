@@ -6,6 +6,9 @@ services:
     build:
       context: .. # relative position to docker-compose.yml file location
       dockerfile: ./docker/pg/Dockerfile.prod
+      args:
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        PGPORT: ${PGPORT}
     container_name: pg
     volumes:
       - ../db_data:/var/lib/postgresql/data:cached

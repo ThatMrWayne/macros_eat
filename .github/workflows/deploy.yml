@@ -63,9 +63,7 @@ jobs:
         POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
         PGPORT: ${{ secrets.DB_PORT }}
       run: |
-        echo "Building with password: $POSTGRES_PASSWORD"
-        echo "Building with port: $PGPORT"
-        POSTGRES_PASSWORD=$POSTGRES_PASSWORD PGPORT=$PGPORT docker compose -f ./docker_compose/docker-compose-prod.yml build pg
+        docker compose -f ./docker_compose/docker-compose-prod.yml build pg
         docker compose -f ./docker_compose/docker-compose-prod.yml build django-server
         docker compose -f ./docker_compose/docker-compose-prod.yml build nginx
 
