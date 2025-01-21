@@ -41,7 +41,7 @@ jobs:
 
     - name: Create production config for Nginx
       run: |
-        echo "${{ secrets.NGINX_PROD_CONF }}" > nginx_prod.conf
+        echo "${{ secrets.NGINX_PROD_CONF_TEST }}" > nginx_prod.conf
 
 
     - name: Configure AWS credentials
