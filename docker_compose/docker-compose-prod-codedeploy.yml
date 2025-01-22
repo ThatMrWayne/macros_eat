@@ -1,0 +1,57 @@
+# Production version for codeDeploy
+
+services:
+  pg:
+    image: ${ECR_REGISTRY}/macroseat-postgres:latest
+    container_name: pg
+    volumes:
+      - ./db_data:/var/lib/postgresql/data:cached
+    networks:
+      - service-network
+
+  redis:
+    image: redis:7.4.2
+    container_name: redis
+    networks:
+      - service-network
+
+  django-server:
+    image: ${ECR_REGISTRY}/macroseat-django:latest
+    container_name: django-server
+    command: sh /app/docker/scripts/run_django_prod.sh
+    working_dir: /app
+    environment:
+      - ENV=prod
+    volumes:
+      - ./log:/app/log
+    networks:
+      - service-network
+    links:
+      - pg
+      - redis
+    depends_on:
+      - pg
+    expose:
+      - 8000
+
+  nginx:
+    image: ${ECR_REGISTRY}/macroseat-nginx:latest
+    volumes:
+      - ./log/nginx:/var/log/nginx
+    environment:
+      - VIRTUAL_HOST=macroseat.online,www.macroseat.online
+      - LETSENCRYPT_HOST=macroseat.online,www.macroseat.online
+      - VIRTUAL_PORT=80
+    restart: always
+    networks:
+      - service-network
+      - nginx-proxy
+    depends_on:
+      - django-server
+
+networks:
+  service-network:
+    name: "service-network"
+    driver: bridge
+  nginx-proxy:
+    external: true

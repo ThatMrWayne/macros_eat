@@ -1,0 +1,18 @@
+version: 0.0
+os: linux
+files:
+  - source: ./docker_compose/docker-compose-prod-codedeploy.yml
+    destination: /home/ubuntu/production
+hooks:
+  ApplicationStop:
+   - location: ./deploy_scripts/stop.sh
+     timeout: 300
+     runas: root
+  AfterInstall:
+   - location: ./deploy_scripts/setup.sh
+     timeout: 400
+     runas: root
+  ApplicationStart:
+  - location: ./deploy_scripts/run.sh
+    timeout: 300
+    runas: root
