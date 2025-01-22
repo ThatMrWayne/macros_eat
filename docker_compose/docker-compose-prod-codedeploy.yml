@@ -2,7 +2,7 @@
 
 services:
   pg:
-    image: ${ECR_REGISTRY}/macroseat-postgres:latest
+    image: 298325099374.dkr.ecr.us-east-1.amazonaws.com/macroseat-postgres:latest
     container_name: pg
     volumes:
       - ./db_data:/var/lib/postgresql/data:cached
@@ -16,7 +16,7 @@ services:
       - service-network
 
   django-server:
-    image: ${ECR_REGISTRY}/macroseat-django:latest
+    image: 298325099374.dkr.ecr.us-east-1.amazonaws.com/macroseat-django:latest
     container_name: django-server
     command: sh /app/docker/scripts/run_django_prod.sh
     working_dir: /app
@@ -35,7 +35,7 @@ services:
       - 8000
 
   nginx:
-    image: ${ECR_REGISTRY}/macroseat-nginx:latest
+    image: 298325099374.dkr.ecr.us-east-1.amazonaws.com/macroseat-nginx:latest
     volumes:
       - ./log/nginx:/var/log/nginx
     environment:
