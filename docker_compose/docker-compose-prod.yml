@@ -57,6 +57,7 @@ services:
     restart: always
     networks:
       - service-network
+      - nginx-proxy
     depends_on:
       - django-server
 
@@ -64,3 +65,5 @@ networks:
   service-network:
     name: "service-network"
     driver: bridge
+  nginx-proxy:
+    external: true

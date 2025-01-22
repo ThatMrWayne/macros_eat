@@ -10,6 +10,8 @@ services:
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
     restart: always
+    networks:
+      - nginx-proxy
 
   acme-companion:
     image: nginxproxy/acme-companion
@@ -21,6 +23,14 @@ services:
     environment:
       - DEFAULT_EMAIL=whph60308@gmail.com
     restart: always
+    networks:
+      - nginx-proxy
+
+
+networks:
+  nginx-proxy:
+    external: true
+
 
 volumes:
   certs:
