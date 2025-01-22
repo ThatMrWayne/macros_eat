@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: /
+  - source: ./docker_compose/docker-compose-prod-codedeploy.yml
     destination: /home/ubuntu/production
 hooks:
   ApplicationStop:
