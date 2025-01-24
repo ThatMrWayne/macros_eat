@@ -1,10 +1,8 @@
 from django.contrib import auth
 from django.db import IntegrityError
-from django.db.models import Q
 from django.shortcuts import redirect
 from django.contrib.auth import get_user_model
-from django.views.decorators.csrf import csrf_exempt, csrf_protect
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated

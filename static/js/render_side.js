@@ -203,7 +203,7 @@ function create_my_tr_load(food){
         if(previous_selected){
             previous_selected.classList.toggle("selected");
         };
-        this.classList.toggle("selected"); 
+        this.classList.toggle("selected");
         select_food["food_name"] = this.querySelector(".food-name").textContent;
         select_food["protein"] = Number(this.querySelector(".p").textContent);
         select_food["fat"] = Number(this.querySelector(".f").textContent);
@@ -1617,7 +1617,7 @@ function render_sidebar(user_data){
     render_my_plan(navmenu);
     render_my_weight(navmenu);
     render_my_record(navmenu);
-    render_health_helper(navmenu);
+    //render_health_helper(navmenu);
     render_log_out(navmenu);
     let remind = document.getElementById("remind").textContent;
     if(remind === "yes"){
