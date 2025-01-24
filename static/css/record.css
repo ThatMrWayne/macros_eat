@@ -617,7 +617,7 @@ td {
 }
 
 
-.health-helper::after{
+.daily-record::after{
     content: "";
     display: block;
     margin-top: 40px;

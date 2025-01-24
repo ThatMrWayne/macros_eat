@@ -1564,7 +1564,7 @@ function render_health_helper(navmenu){
     span.setAttribute("id","healthhelper");
     span.appendChild(document.createTextNode("Health Helper"));
     span.addEventListener("click",function(){ //to chat page
-        window.open('https://www.macroseat.xyz/helper', '_blank'); 
+        window.open('https://www.macroseat.xyz/helper', '_blank');
     });
     health_helper.appendChild(pic_div);
     health_helper.appendChild(span);

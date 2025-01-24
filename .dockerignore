@@ -114,3 +114,5 @@ production.example.cfg
 certs/
 vhost/
 acme/
+
+demo/
