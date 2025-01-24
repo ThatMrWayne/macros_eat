@@ -394,7 +394,8 @@ function handleSignUp(){
     let email = document.querySelector('.email').value;
     let password = document.querySelector('.pass').value;
     let name = document.querySelector('.name').value;
-    let identity = document.getElementsByName('identity')[0].value;
+    //let identity = document.getElementsByName('identity')[0].value;
+    let identity = '1';
     //前端驗證確實輸入或輸入正不正確
     if ((!name||!email) || (!password) || (identity==="0")){
         showMessage('Please fill in valid information',false,false);
@@ -449,7 +450,8 @@ function handleSignUp(){
 function handleSignIn(){
     let email = document.querySelector('.email').value;
     let password = document.querySelector('.pass').value;
-    let identity = document.getElementsByName('identity')[0].value;
+    //let identity = document.getElementsByName('identity')[0].value;
+    let identity = '1';
     if (!email || !password || (identity==='0')){
         showMessage('Please fill in valid information',true,null)
     }else{
@@ -513,9 +515,9 @@ function showBox(obj,flag){ //flag true代表有帳戶,false沒有帳戶
     input_mail.setAttribute("placeholder",obj.mail_txt);
     input_mail.setAttribute("type","text");
     //test account
-    if(flag){
-        input_mail.value = "test@gmail.com";
-    };
+    //if(flag){
+    //    input_mail.value = "test@gmail.com";
+    //};
     sign_content.appendChild(input_mail);
     //密碼輸入框
     let input_pass = document.createElement("input");
@@ -524,9 +526,9 @@ function showBox(obj,flag){ //flag true代表有帳戶,false沒有帳戶
     input_pass.setAttribute("type","password");
     sign_content.appendChild(input_pass);
     //test account
-    if(flag){
-        input_pass.value = "wayne123WAYNE";
-    };
+    //if(flag){
+    //    input_pass.value = "wayne123WAYNE";
+    //};
     //身份選擇匡
     let select = document.createElement("select");
     select.setAttribute("name",'identity');
@@ -543,10 +545,10 @@ function showBox(obj,flag){ //flag true代表有帳戶,false沒有帳戶
     select.appendChild(option1);
     select.appendChild(option2);
     //test account
-    if(flag){
-        select.value = "1";
-    };
-    sign_content.appendChild(select);
+    //if(flag){
+    //select.value = "1";
+    //};
+    //sign_content.appendChild(select);
     //登入,註冊鈕
     let button = document.createElement("div");
     button.setAttribute("id","signbtn");
@@ -572,25 +574,25 @@ function showBox(obj,flag){ //flag true代表有帳戶,false沒有帳戶
     //將主內容放入框框裡
     sign_box.append(sign_content);
     //如果是true,要多一個login with google
-    if(flag){
-        let google_signbox = document.createElement("div");
-        google_signbox.classList.add("google-signbox");
-        let google_btn = document.createElement("div");
-        google_btn.classList.add("google-btn");
-        let a = document.createElement("a");
-        a.setAttribute("href","/login/google");
-        let img = new Image();
-        img.src = "https://d2fbjpv4bzz3d2.cloudfront.net/google.png";
-        img.id = "google";
-        let btn_text = document.createElement("div");
-        btn_text.classList.add("google-btn-text");
-        btn_text.appendChild(document.createTextNode("Continue with google"));
-        a.appendChild(img);
-        a.appendChild(btn_text);
-        google_btn.appendChild(a);
-        google_signbox.appendChild(google_btn);
-        sign_box.append(google_signbox);
-    };
+    //if(flag){
+    //    let google_signbox = document.createElement("div");
+    //    google_signbox.classList.add("google-signbox");
+    //    let google_btn = document.createElement("div");
+    //    google_btn.classList.add("google-btn");
+    //    let a = document.createElement("a");
+    //    a.setAttribute("href","/login/google");
+    //    let img = new Image();
+    //    img.src = "https://d2fbjpv4bzz3d2.cloudfront.net/google.png";
+    //   img.id = "google";
+    //    let btn_text = document.createElement("div");
+    //   btn_text.classList.add("google-btn-text");
+    //  btn_text.appendChild(document.createTextNode("Continue with google"));
+    //    a.appendChild(img);
+    //   a.appendChild(btn_text);
+    //    google_btn.appendChild(a);
+    //    google_signbox.appendChild(google_btn);
+    //    sign_box.append(google_signbox);
+    //};
     section2.appendChild(sign_box);
 }
 
@@ -642,12 +644,12 @@ function init_sign(){
         let signin_button = document.getElementById("signbtn");
         signin_button.addEventListener("click", function(){handleSignIn()});
         //for interview test account
-        let identity = document.getElementsByName("identity")[0];
-        identity.value = "1";
-        let email = document.querySelector(".email");
-        email.value = "wayne@gmail.com";
-        let pwd = document.querySelector(".pass");
-        pwd.value = "123";
+        //let identity = document.getElementsByName("identity")[0];
+        //identity.value = "1";
+        //let email = document.querySelector(".email");
+        //email.value = "wayne@gmail.com";
+        //let pwd = document.querySelector(".pass");
+        //pwd.value = "123";
     }else if (window.location.pathname ==='/record/'){
         // 準備 render 記錄頁面，要先檢查有沒有填過初始資料
         renderRecordCheck();
