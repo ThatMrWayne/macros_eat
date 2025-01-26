@@ -515,9 +515,9 @@ function showBox(obj,flag){ //flag true代表有帳戶,false沒有帳戶
     input_mail.setAttribute("placeholder",obj.mail_txt);
     input_mail.setAttribute("type","text");
     //test account
-    //if(flag){
-    //    input_mail.value = "test@gmail.com";
-    //};
+    if(flag){
+        input_mail.value = "test@gmail.com";
+    };
     sign_content.appendChild(input_mail);
     //密碼輸入框
     let input_pass = document.createElement("input");
@@ -526,9 +526,9 @@ function showBox(obj,flag){ //flag true代表有帳戶,false沒有帳戶
     input_pass.setAttribute("type","password");
     sign_content.appendChild(input_pass);
     //test account
-    //if(flag){
-    //    input_pass.value = "wayne123WAYNE";
-    //};
+    if(flag){
+        input_pass.value = "123";
+    };
     //身份選擇匡
     let select = document.createElement("select");
     select.setAttribute("name",'identity');
@@ -646,10 +646,10 @@ function init_sign(){
         //for interview test account
         //let identity = document.getElementsByName("identity")[0];
         //identity.value = "1";
-        //let email = document.querySelector(".email");
-        //email.value = "wayne@gmail.com";
-        //let pwd = document.querySelector(".pass");
-        //pwd.value = "123";
+        let email = document.querySelector(".email");
+        email.value = "test@gmail.com";
+        let pwd = document.querySelector(".pass");
+        pwd.value = "123";
     }else if (window.location.pathname ==='/record/'){
         // 準備 render 記錄頁面，要先檢查有沒有填過初始資料
         renderRecordCheck();

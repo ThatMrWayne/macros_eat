@@ -10,6 +10,7 @@ Macros Eat aims to help you record your daily diet with personalized diet plans 
 🖥️ Website URL : https://www.macroseat.online/
 
 Test account : test@gmail.com
+
 Test password : 123
 
 
